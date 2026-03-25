@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<DownloadTask xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProjectInfo ProjectId="f12202d1-1cee-4e40-ab6e-0c95c0609b03" ESProjectName="PLC_DoAn" ESDeviceName="HMI_RT_1" RtProjectFolderName="PLC_DoAn.PC-System_1[SIMATIC PC station - WinCC Unified Scada RT]" RtProjectName="PLC_DoAn.PC-System_1[SIMATIC PC station - WinCC Unified Scada RT]" DeviceType="SIMATIC PC station - WinCC Unified Scada RT" DeviceVersion="16.0.0.0" CreationTime="01/07/2026 10:39:55" FirmwareFileName="" RuntimeFileName="" PRCV="2.0.0.0" RTCV="0.0.0.0" RTReleaseNo="16.0.0.0" ImageReleaseNo="0.0.0.0" />
+  <FullDownload type="ADMINDATA">UMCData.json</FullDownload>
+  <FullDownload>User.pbb</FullDownload>
+  <FullDownload>config\config.level</FullDownload>
+  <FullDownload>general\AlarmLogging.rdf</FullDownload>
+  <FullDownload>general\backupStrategies.rdf</FullDownload>
+  <FullDownload>general\cds.rdf</FullDownload>
+  <FullDownload>general\ChromIdentification.rdf</FullDownload>
+  <FullDownload>general\config_AlertClass.rdf</FullDownload>
+  <FullDownload>general\config_AlertHandler.rdf</FullDownload>
+  <FullDownload>general\config_DistributionInfo.rdf</FullDownload>
+  <FullDownload>general\config_DpValue.rdf</FullDownload>
+  <FullDownload>general\config_HmiRuntime.rdf</FullDownload>
+  <FullDownload>general\config_InitialValue.rdf</FullDownload>
+  <FullDownload>general\config_PeripheralAddress.rdf</FullDownload>
+  <FullDownload>general\config_SecureConnectionAttributes.rdf</FullDownload>
+  <FullDownload>general\config_Smoothing.rdf</FullDownload>
+  <FullDownload>general\dpIdentification.rdf</FullDownload>
+  <FullDownload>general\main.rdf</FullDownload>
+  <FullDownload>general\Style.rdf</FullDownload>
+  <FullDownload>general\textLibrary_21_1033.rdf</FullDownload>
+  <FullDownload>general\textLibrary_90_1033.rdf</FullDownload>
+  <FullDownload>general\textListLibrary.rdf</FullDownload>
+  <FullDownload>graphics\graphicListLibrary.rdf</FullDownload>
+  <FullDownload>graphics\imageLibrary_1033.rdf</FullDownload>
+  <FullDownload>screens\screen_20.rdf</FullDownload>
+  <FullDownload>screens\screen_269.rdf</FullDownload>
+  <FullDownload>screens\screen_271.rdf</FullDownload>
+  <FullDownload>screens\screen_272.rdf</FullDownload>
+  <FullDownload>screens\screen_94.rdf</FullDownload>
+  <FullDownload>system\ProjectCharacteristics.rdf</FullDownload>
+</DownloadTask>
