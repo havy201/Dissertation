@@ -10,7 +10,7 @@ class BotCloseDetailScreen extends StatefulWidget
   const BotCloseDetailScreen({super.key, required this.screenName});
 
   @override
-  Size get preferredSize => const Size.fromHeight(66);
+  Size get preferredSize => const Size.fromHeight(50);
   State<BotCloseDetailScreen> createState() => _BotCloseDetailScreenState();
 }
 
@@ -33,22 +33,27 @@ class _BotCloseDetailScreenState extends State<BotCloseDetailScreen>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 66,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 68, vertical: 10),
-        child: FilledButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/${widget.screenName}');
-          },
-          child: Text(
-            'Xong',
-            style: Global.fontStyleBaloo(fontSize, color: Colors.white),
-          ),
-          style: FilledButton.styleFrom(
-            backgroundColor: Color(0xFF032B91),
-            // padding: EdgeInsets.symmetric(horizontal: 138, vertical: 13),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+      width: double.infinity,
+      height: 50,
+      decoration: const BoxDecoration(color: Colors.white),
+      child: Align(
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: 270,
+          height: 40,
+          child: FilledButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/${widget.screenName}');
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF032B91),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'Xong',
+              style: Global.fontStyleBaloo(fontSize, color: Colors.white),
             ),
           ),
         ),

@@ -29,7 +29,7 @@ class _ReportScreenState extends State<ReportScreen> {
           crossAxisSpacing: spacing,
           crossAxisCount: 2,
           children: [
-            Decorations().informationCell(
+            informationCell(
               context,
               'lib/animals/cat.png',
               'Thức ăn mèo',
@@ -47,20 +47,23 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 }
 
-class Decorations {
-  Container informationCell(
-    BuildContext context,
-    String imagePath,
-    String productName,
-    int status,
-    String id,
-    String customerName,
-    String orderDate,
-    String ingredients,
-  ) {
-    return Container(
-      height: 251,
-      width: 167,
+GestureDetector informationCell(
+  BuildContext context,
+  String imagePath,
+  String productName,
+  int status,
+  String id,
+  String customerName,
+  String orderDate,
+  String ingredients,
+) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.pushNamed(context, '/detailReport');
+    },
+    child: Container(
+      // height: 251,
+      // width: 167,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.grey.withValues(alpha: 0.2), width: 1),
@@ -89,79 +92,64 @@ class Decorations {
               overflow: TextOverflow.ellipsis,
             ),
             Spacer(),
-            Text('Ngày đặt: $orderDate', style: Global.fontStyleInter(fontSize)),
+            Text(
+              'Ngày đặt: $orderDate',
+              style: Global.fontStyleInter(fontSize),
+            ),
             Spacer(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Thành phần: $ingredients',
-                    softWrap: true,
-                    overflow: TextOverflow.fade,
-                    maxLines: 3,
-                    style: Global.fontStyleInter(
-                      fontSizeNote,
-                      isItalic: true,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/detailReport');
-                  },
-                  icon: Image(
-                    image: AssetImage('lib/icons/click.png'),
-                    height: 30,
-                    width: 30,
-                  ),
-                ),
-              ],
+            Text(
+              'Thành phần: $ingredients',
+              softWrap: true,
+              overflow: TextOverflow.fade,
+              maxLines: 3,
+              style: Global.fontStyleInter(
+                fontSizeNote,
+                isItalic: true,
+                color: Colors.grey,
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Container statusTag(int status) {
-    var tagInfo = statusTagText(status);
-    return Container(
-      height: 19,
-      width: 75,
-      decoration: BoxDecoration(
-        color: tagInfo.$2,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Center(
-        child: Text(
-          tagInfo.$1,
-          style: TextStyle(
-            fontSize: fontSizeNote,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+Container statusTag(int status) {
+  var tagInfo = statusTagText(status);
+  return Container(
+    height: 19,
+    width: 75,
+    decoration: BoxDecoration(
+      color: tagInfo.$2,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Center(
+      child: Text(
+        tagInfo.$1,
+        style: TextStyle(
+          fontSize: fontSizeNote,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  (String, Color) statusTagText(int status) {
-    switch (status) {
-      case 0:
-        return ('Hủy', Color(0xFFFF0000));
-      case 1:
-        return ('Chờ xử lý', Color(0xFF8C8C8C));
-      case 2:
-        return ('Đang xử lý', Color(0xFF00BBFF));
-      case 3:
-        return ('Hoàn thành', Color(0xFF1F7300));
-      case 4:
-        return ('Đang sản xuất', Colors.green);
-      default:
-        return ('Không xác định', Color(0xFF000000));
-    }
+(String, Color) statusTagText(int status) {
+  switch (status) {
+    case 0:
+      return ('Hủy', Color(0xFFFF0000));
+    case 1:
+      return ('Chờ xử lý', Color(0xFF8C8C8C));
+    case 2:
+      return ('Đang xử lý', Color(0xFF00BBFF));
+    case 3:
+      return ('Hoàn thành', Color(0xFF1F7300));
+    case 4:
+      return ('Đang sản xuất', Colors.green);
+    default:
+      return ('Không xác định', Color(0xFF000000));
   }
 }

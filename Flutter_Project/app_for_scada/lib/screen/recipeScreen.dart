@@ -2,6 +2,8 @@ import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
+import '../model/Recipe.dart';
+import '../api/RecipeAPIServer.dart';
 
 final double itemSpacing = Global.spacing;
 final double padding = Global.padding;
@@ -15,57 +17,58 @@ class RecipeScreen extends StatefulWidget {
 }
 
 class _RecipeScreenState extends State<RecipeScreen> {
-  final List<String> baseRecipes = [
-    'Công thức 1: Thức ăn cho mèo',
-    'Công thức 2: Thức ăn cho chó',
-    'Công thức 3: Thức ăn cho cá',
-    'Công thức 4: Thức ăn cho gà',
-    'Công thức 5: Thức ăn cho lợn',
-    'Công thức 6: Thức ăn cho bò',
-    'Công thức 7: Thức ăn cho thỏ',
-    'Công thức 8: Thức ăn cho chim',
-    'Công thức 9: Thức ăn cho rắn',
-    'Công thức 10: Thức ăn cho ngựa',
-    'Công thức 11: Thức ăn cho dê',
-    'Công thức 12: Thức ăn cho cừu',
-    'Công thức 13: Thức ăn cho gà con',
-    'Công thức 14: Thức ăn cho vịt',
-    'Công thức 15: Thức ăn cho ngan',
-    'Công thức 16: Thức ăn cho cá koi',
-    'Công thức 17: Thức ăn cho cá vàng',
-    'Công thức 18: Thức ăn cho cá chép',
-    'Công thức 19: Thức ăn cho cá rô',
-    'Công thức 20: Thức ăn cho cá trê',
-  ];
+  static Future<List<Recipe>>? _cachedRecipesFuture;
+  late Future<List<Recipe>> _recipesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _recipesFuture = _cachedRecipesFuture ??= RecipeAPIServer.instance
+        .getAllRecipes();
+  }
+
+  Future<void> _refreshRecipes() async {
+    final future = RecipeAPIServer.instance.getAllRecipes();
+    setState(() {
+      _recipesFuture = future;
+      _cachedRecipesFuture = future;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TopAppBar(title: 'Công thức'),
       backgroundColor: Colors.white,
-      // body: SingleChildScrollView(
-      //   child: Padding(
-      //     padding: EdgeInsets.all(itemSpacing),
-      //     child: Center(
-      //       child: Column(
-      //         crossAxisAlignment:
-      //             CrossAxisAlignment.stretch, //ep cac con dan het chieu ngang
-      //         children: List.generate(
-      //           baseRecipes.length,
-      //           (index) =>
-      //               Decorations().recipeCard(context, baseRecipes[index]),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
       body: Padding(
         padding: EdgeInsets.all(itemSpacing),
-        child: ListView(
-          reverse: false,
-          children: List.generate(
-            baseRecipes.length,
-            (index) => Decorations().recipeCard(context, baseRecipes[index]),
+        child: RefreshIndicator(
+          color: Color(0xFF032B91),
+          strokeWidth: 3,
+          onRefresh: _refreshRecipes,
+          child: FutureBuilder<List<Recipe>>(
+            future: _recipesFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Global.loadingIndicator();
+              } else if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data!.isEmpty) {
+                String message = snapshot.hasError
+                    ? 'Lỗi khi tải công thức'
+                    : 'Không có công thức nào';
+                return Global.errorIndicator(message, context);
+              } else {
+                return ListView(
+                  reverse: false,
+                  clipBehavior: Clip.none,
+                  children: List.generate(
+                    snapshot.data!.length,
+                    (index) => recipeCard(context, snapshot.data![index]),
+                  ),
+                );
+              }
+            },
           ),
         ),
       ),
@@ -74,22 +77,20 @@ class _RecipeScreenState extends State<RecipeScreen> {
   }
 }
 
-class Decorations {
-  GestureDetector recipeCard(BuildContext context, String text) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, '/detailRecipe');
-      },
-      child: Card(
-        color: Color(0xffC2FCFF),
-        margin: EdgeInsets.only(bottom: itemSpacing, top: 0, left: 0, right: 0),
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: EdgeInsets.all(padding),
-          child: Text(text, style: Global.fontStyleBaloo(fontSize)),
-        ),
+GestureDetector recipeCard(BuildContext context, Recipe recipe) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.pushNamed(context, '/detailRecipe', arguments: recipe);
+    },
+    child: Card(
+      color: Color(0xffC2FCFF),
+      margin: EdgeInsets.only(bottom: itemSpacing, top: 0, left: 0, right: 0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: EdgeInsets.all(padding),
+        child: Text(recipe.name, style: Global.fontStyleBaloo(fontSize)),
       ),
-    );
-  }
+    ),
+  );
 }

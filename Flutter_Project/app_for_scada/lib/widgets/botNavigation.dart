@@ -10,7 +10,7 @@ class BotNavigation extends StatelessWidget implements PreferredSizeWidget {
   const BotNavigation({super.key, required this.currentIndex});
 
   @override
-  Size get preferredSize => const Size.fromHeight(66);
+  Size get preferredSize => const Size.fromHeight(50);
 
   void _navigate(BuildContext context, int index) {
     Widget screen;
@@ -19,23 +19,18 @@ class BotNavigation extends StatelessWidget implements PreferredSizeWidget {
     switch (index) {
       case 0:
         screen = const HomeScreen();
-
         break;
       case 1:
         screen = const RecipeScreen();
-
         break;
       case 2:
         screen = const TrendScreen();
-
         break;
       case 3:
         screen = const AlarmScreen();
-
         break;
       case 4:
         screen = const ReportScreen();
-
         break;
       default:
         screen = const HomeScreen();
@@ -53,10 +48,11 @@ class BotNavigation extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 66,
+      height: 50,
       decoration: BoxDecoration(color: Colors.white),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildNavItem(
             context,
@@ -64,7 +60,6 @@ class BotNavigation extends StatelessWidget implements PreferredSizeWidget {
             'lib/icons/home_light.png',
             0,
           ),
-
           _buildNavItem(
             context,
             'lib/icons/recipe_dark.png',
@@ -101,7 +96,6 @@ class BotNavigation extends StatelessWidget implements PreferredSizeWidget {
     int index,
   ) {
     final bool isSelected = currentIndex == index;
-
     return GestureDetector(
       onTap: () => _navigate(context, index),
       child: Image.asset(isSelected ? icon1 : icon2, height: 30),

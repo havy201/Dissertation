@@ -21,7 +21,11 @@ class _DetailReportState extends State<DetailReport> {
       appBar: TopAppBar(title: 'Báo cáo'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(itemSpacing),
+        padding: EdgeInsets.only(
+          top: itemSpacing,
+          left: padding,
+          right: padding,
+        ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -75,28 +79,7 @@ class _DetailReportState extends State<DetailReport> {
                     separatorBuilder: (context, index) =>
                         Divider(color: Colors.white, height: 2),
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: Icon(
-                          Icons.person,
-                          color: Colors.blue,
-                        ), // Thay bằng Container bọc Icon nếu muốn giống ảnh
-                        title: Text(
-                          'Khách hàng',
-                          style: Global.fontStyleInter(16, isBold: true),
-                        ),
-                        subtitle: Text(
-                          'Hạ Vy',
-                          style: Global.fontStyleInter(
-                            16,
-                            isItalic: true,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                      );
+                      return listItem();
                     },
                   ),
                 ),
@@ -110,4 +93,51 @@ class _DetailReportState extends State<DetailReport> {
       ),
     );
   }
+}
+
+Container listItem() {
+  return Container(
+    child: Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: itemSpacing,
+        vertical: itemSpacing / 2,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 30,
+            width: 30,
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Center(
+              child: Image(
+                image: AssetImage('lib/animals/dog.png'),
+                height: 24,
+                width: 24,
+              ),
+            ),
+          ),
+          SizedBox(width: itemSpacing),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Nguyên liệu', style: Global.fontStyleBaloo(16)),
+                Text(
+                  '100g hạt bắp, 20g đường, 10g sữa đặc, 5g muối, 2g vani, 1000ml nước, 3 quả trứng, 100g bột mì, 30g bơ, 200ml sữa tươi, 4 quả táo',
+                  textAlign: TextAlign.justify,
+                  style: Global.fontStyleInter(16),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1,3 +1,4 @@
+import 'package:app_for_scada/model/Recipe.dart';
 import 'package:app_for_scada/widgets/botCloseDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
@@ -7,21 +8,17 @@ final double space = Global.spacing;
 final double fontTitleSize = 16;
 final double fontSize = 12;
 
-class DetailRecipe extends StatefulWidget {
+class DetailRecipe extends StatelessWidget {
   const DetailRecipe({super.key});
 
   @override
-  State<DetailRecipe> createState() => _DetailRecipeState();
-}
-
-class _DetailRecipeState extends State<DetailRecipe> {
-  @override
   Widget build(BuildContext context) {
+    final Recipe recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
     return Scaffold(
       appBar: const TopAppBar(title: 'Công thức'),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(space),
+          padding: EdgeInsets.only(left: space, right: space, top: space),
           child: Column(
             children: [
               Table(
@@ -41,21 +38,21 @@ class _DetailRecipeState extends State<DetailRecipe> {
                         style: Global.fontStyleBaloo(fontTitleSize),
                       ),
                       Global.tableCell(
-                        'Thức ăn cá tra',
+                        recipe.name,
                         style: Global.fontStyleBaloo(fontTitleSize),
                       ),
                     ],
                   ),
-                  _row('Nguyên liệu 1', 'Bột cá'),
-                  _row('Tỷ lệ', '22%'),
-                  _row('Nguyên liệu 2', 'Bột đậu nành'),
-                  _row('Tỷ lệ', '22%'),
-                  _row('Nguyên liệu 3', 'Cám gạo'),
-                  _row('Tỷ lệ', '30%'),
-                  _row('Phụ gia', 'Vitamin, khoáng, chất kết dính'),
-                  _row('Tỷ lệ', '1%'),
-                  _row('Nước', 'Nước sạch'),
-                  _row('Tỷ lệ', '25%'),
+                  _row('Nguyên liệu 1', recipe.ingredient1),
+                  _row('Tỷ lệ', recipe.ratio1.toString()),
+                  _row('Nguyên liệu 2', recipe.ingredient2),
+                  _row('Tỷ lệ', recipe.ratio2.toString()),
+                  _row('Nguyên liệu 3', recipe.ingredient3),
+                  _row('Tỷ lệ', recipe.ratio3.toString()),
+                  _row('Phụ gia', recipe.spice),
+                  _row('Tỷ lệ', recipe.ratioSpice.toString()),
+                  _row('Nước', recipe.water),
+                  _row('Tỷ lệ', recipe.ratioWater.toString()),
                 ],
               ),
             ],
@@ -67,13 +64,13 @@ class _DetailRecipeState extends State<DetailRecipe> {
       ),
     );
   }
-}
 
-TableRow _row(String title, String content) {
-  return TableRow(
-    children: [
-      Global.tableCell(title, style: Global.fontStyleInter(fontSize)),
-      Global.tableCell(content, style: Global.fontStyleInter(fontSize)),
-    ],
-  );
+  TableRow _row(String title, String content) {
+    return TableRow(
+      children: [
+        Global.tableCell(title, style: Global.fontStyleInter(fontSize)),
+        Global.tableCell(content, style: Global.fontStyleInter(fontSize)),
+      ],
+    );
+  }
 }
