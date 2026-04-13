@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../global.dart';
+
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double fontSize = 16;
 
@@ -14,8 +15,8 @@ class BotCloseDetailScreen extends StatefulWidget
   State<BotCloseDetailScreen> createState() => _BotCloseDetailScreenState();
 }
 
-class _BotCloseDetailScreenState extends State<BotCloseDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _BotCloseDetailScreenState extends State<BotCloseDetailScreen> 
+    with SingleTickerProviderStateMixin, fontStyleMixin {
   late AnimationController _controller;
 
   @override
@@ -53,7 +54,7 @@ class _BotCloseDetailScreenState extends State<BotCloseDetailScreen>
             ),
             child: Text(
               'Xong',
-              style: Global.fontStyleBaloo(fontSize, color: Colors.white),
+              style: fontStyleBaloo(fontSize, color: Colors.white),
             ),
           ),
         ),

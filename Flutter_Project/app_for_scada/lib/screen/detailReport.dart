@@ -2,6 +2,7 @@ import 'package:app_for_scada/widgets/botCloseDetailScreen.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import 'package:flutter/material.dart';
 import '../global.dart';
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double itemSpacing = Global.spacing;
 final double padding = Global.padding;
@@ -14,7 +15,7 @@ class DetailReport extends StatefulWidget {
   State<DetailReport> createState() => _DetailReportState();
 }
 
-class _DetailReportState extends State<DetailReport> {
+class _DetailReportState extends State<DetailReport> with fontStyleMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,8 +59,8 @@ class _DetailReportState extends State<DetailReport> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Thức ăn chó', style: Global.fontStyleBaloo(16)),
-                          Text('ID: 203', style: Global.fontStyleInter(16)),
+                          Text('Thức ăn chó', style: fontStyleBaloo(16)),
+                          Text('ID: 203', style: fontStyleInter(16)),
                         ],
                       ),
                     ],
@@ -93,9 +94,7 @@ class _DetailReportState extends State<DetailReport> {
       ),
     );
   }
-}
-
-Container listItem() {
+  Container listItem() {
   return Container(
     child: Padding(
       padding: EdgeInsets.symmetric(
@@ -127,11 +126,11 @@ Container listItem() {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Nguyên liệu', style: Global.fontStyleBaloo(16)),
+                Text('Nguyên liệu', style: fontStyleBaloo(16)),
                 Text(
                   '100g hạt bắp, 20g đường, 10g sữa đặc, 5g muối, 2g vani, 1000ml nước, 3 quả trứng, 100g bột mì, 30g bơ, 200ml sữa tươi, 4 quả táo',
                   textAlign: TextAlign.justify,
-                  style: Global.fontStyleInter(16),
+                  style: fontStyleInter(16),
                 ),
               ],
             ),
@@ -141,3 +140,6 @@ Container listItem() {
     ),
   );
 }
+}
+
+

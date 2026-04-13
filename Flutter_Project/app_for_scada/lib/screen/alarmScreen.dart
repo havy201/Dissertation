@@ -4,6 +4,7 @@ import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import '../model/Alarm.dart';
 import '../api/AlarmAPIServer.dart';
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double padding = Global.spacing;
 final double fontSize = 12;
@@ -16,7 +17,8 @@ class AlarmScreen extends StatefulWidget {
   State<AlarmScreen> createState() => _AlarmScreenState();
 }
 
-class _AlarmScreenState extends State<AlarmScreen> {
+class _AlarmScreenState extends State<AlarmScreen>
+    with fontStyleMixin, itemDecorationMixin {
   late Future<List<Alarm>> _alarmsFuture;
   @override
   void initState() {
@@ -42,26 +44,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
           border: TableBorder.all(color: Colors.grey),
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
           children: [
-            TableRow(
-              decoration: BoxDecoration(color: Color(0xFFE0E0E0)),
-              children: [
-                Global.tableCell(
-                  'Thời gian',
-                  style: Global.fontStyleBaloo(fontTitleSize),
-                ),
-                Global.tableCell(
-                  'Lỗi',
-                  style: Global.fontStyleBaloo(fontTitleSize),
-                ),
-                Global.tableCell(
-                  'Chi tiết',
-                  style: Global.fontStyleBaloo(fontTitleSize),
-                ),
-                Global.tableCell(
-                  'Trạng thái',
-                  style: Global.fontStyleBaloo(fontTitleSize),
-                ),
-              ],
+            _row(
+              'Thời gian',
+              'Lỗi',
+              'Chi tiết',
+              'Trạng thái',
+              style: fontStyleBaloo(fontTitleSize),
+              decoration: const BoxDecoration(color: Color(0xFFE0E0E0)),
             ),
             _row(
               '16:50:23 27/3/2026',
@@ -75,21 +64,23 @@ class _AlarmScreenState extends State<AlarmScreen> {
       bottomNavigationBar: const BotNavigation(currentIndex: 3),
     );
   }
-}
 
-TableRow _row(
-  String time,
-  String error,
-  String detail,
-  String status, {
-  TextStyle? style,
-}) {
-  return TableRow(
-    children: [
-      Global.tableCell(time, style: style),
-      Global.tableCell(error, style: style),
-      Global.tableCell(detail, style: style),
-      Global.tableCell(status, style: style),
-    ],
-  );
+  TableRow _row(
+    String time,
+    String error,
+    String detail,
+    String status, {
+    TextStyle? style,
+    Decoration? decoration,
+  }) {
+    return TableRow(
+      decoration: decoration,
+      children: [
+        tableCell(time, style: style),
+        tableCell(error, style: style),
+        tableCell(detail, style: style),
+        tableCell(status, style: style),
+      ],
+    );
+  }
 }

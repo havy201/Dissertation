@@ -4,6 +4,7 @@ import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import '../model/Recipe.dart';
 import '../api/RecipeAPIServer.dart';
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double itemSpacing = Global.spacing;
 final double padding = Global.padding;
@@ -16,7 +17,7 @@ class RecipeScreen extends StatefulWidget {
   State<RecipeScreen> createState() => _RecipeScreenState();
 }
 
-class _RecipeScreenState extends State<RecipeScreen> {
+class _RecipeScreenState extends State<RecipeScreen> with fontStyleMixin {
   static Future<List<Recipe>>? _cachedRecipesFuture;
   late Future<List<Recipe>> _recipesFuture;
 
@@ -75,22 +76,22 @@ class _RecipeScreenState extends State<RecipeScreen> {
       bottomNavigationBar: const BotNavigation(currentIndex: 1),
     );
   }
-}
 
-GestureDetector recipeCard(BuildContext context, Recipe recipe) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.pushNamed(context, '/detailRecipe', arguments: recipe);
-    },
-    child: Card(
-      color: Color(0xffC2FCFF),
-      margin: EdgeInsets.only(bottom: itemSpacing, top: 0, left: 0, right: 0),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: EdgeInsets.all(padding),
-        child: Text(recipe.name, style: Global.fontStyleBaloo(fontSize)),
+  GestureDetector recipeCard(BuildContext context, Recipe recipe) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/detailRecipe', arguments: recipe);
+      },
+      child: Card(
+        color: Color(0xffC2FCFF),
+        margin: EdgeInsets.only(bottom: itemSpacing, top: 0, left: 0, right: 0),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: EdgeInsets.all(padding),
+          child: Text(recipe.name, style: fontStyleBaloo(fontSize)),
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

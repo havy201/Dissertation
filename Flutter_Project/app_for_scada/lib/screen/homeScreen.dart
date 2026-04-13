@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../widgets/botNavigation.dart';
 import '../widgets/topAppBar.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double itemSpacing = Global.spacing;
 final double titleGap = Global.titleGap;
 final double padding = Global.padding;
 final double fontSize = 20;
+final double contentFontSize = 14;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +17,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with fontStyleMixin, itemDecorationMixin {
   bool isRunning = true;
   @override
   Widget build(BuildContext context) {
@@ -28,99 +31,76 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Chế độ hoạt động', style: Global.fontStyleBaloo(fontSize)),
+              Text('Chế độ hoạt động', style: fontStyleBaloo(fontSize)),
               SizedBox(height: titleGap),
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(padding),
-                decoration: Decorations().containerDecoration(),
+                decoration: containerDecoration(),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Decorations().indicatorLight(
+                    indicatorLight(
                       isRunning,
                       Color(0xff1F7300), //đèn báo),
                     ),
                     SizedBox(width: 10),
-                    Text('Auto', style: Decorations().contentStyle),
+                    Text(
+                      'Auto',
+                      style: fontStyleBaloo(
+                        contentFontSize,
+                        color: Colors.grey[800],
+                      ),
+                    ),
                     SizedBox(width: 90),
-                    Decorations().indicatorLight(
+                    indicatorLight(
                       isRunning,
                       Color(0xff1F7300), //đèn báo),
                     ),
                     SizedBox(width: 10),
-                    Text('Manu', style: Decorations().contentStyle),
+                    Text(
+                      'Manu',
+                      style: fontStyleBaloo(
+                        contentFontSize,
+                        color: Colors.grey[800],
+                      ),
+                    ),
                   ],
                 ),
               ),
               SizedBox(height: itemSpacing),
-              Text(
-                'Trạng thái hệ thống',
-                style: Global.fontStyleBaloo(fontSize),
-              ),
+              Text('Trạng thái hệ thống', style: fontStyleBaloo(fontSize)),
               SizedBox(height: titleGap),
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(padding),
-                decoration: Decorations().containerDecoration(),
+                decoration: containerDecoration(),
                 child: Table(
                   defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                   children: [
                     TableRow(
                       children: [
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xff898989),
-                          'Idle',
-                        ),
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xff00FF0A),
-                          'Run',
-                        ),
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xffFF6A00),
-                          'Abort',
-                        ),
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xffFF0000),
-                          'Stop',
-                        ),
+                        indicatorWithLabel(true, Color(0xff898989), 'Idle'),
+                        indicatorWithLabel(true, Color(0xff00FF0A), 'Run'),
+                        indicatorWithLabel(true, Color(0xffFF6A00), 'Abort'),
+                        indicatorWithLabel(true, Color(0xffFF0000), 'Stop'),
                       ],
                     ),
                     TableRow(
                       children: [
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xffFFF600),
-                          'Pause',
-                        ),
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xffFFC800),
-                          'Hold',
-                        ),
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xff00BBFF),
-                          'Restart',
-                        ),
-                        Decorations().indicatorWithLabel(
-                          true,
-                          Color(0xff1F7300),
-                          'Complete',
-                        ),
+                        indicatorWithLabel(true, Color(0xffFFF600), 'Pause'),
+                        indicatorWithLabel(true, Color(0xffFFC800), 'Hold'),
+                        indicatorWithLabel(true, Color(0xff00BBFF), 'Restart'),
+                        indicatorWithLabel(true, Color(0xff1F7300), 'Complete'),
                       ],
                     ),
                   ],
                 ),
               ),
               SizedBox(height: itemSpacing),
-              Text('Công đoạn', style: Global.fontStyleBaloo(fontSize)),
+              Text('Công đoạn', style: fontStyleBaloo(fontSize)),
               SizedBox(height: titleGap),
-              Center(child: Decorations().process('70%', 'Trộn nguyên liệu')),
+              Center(child: process('70%', 'Trộn nguyên liệu')),
             ],
           ),
         ),
@@ -129,17 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: const BotNavigation(currentIndex: 0),
     );
   }
-}
-
-class Decorations {
-  TextStyle get contentStyle =>
-      TextStyle(fontFamily: 'Baloo', fontSize: 14, color: Colors.grey[800]);
-
-  BoxDecoration containerDecoration() => BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(10),
-    border: Border.all(color: Color(0xff8C8C8C), width: 3),
-  );
 
   Container indicatorLight(bool isOn, Color color) {
     return Container(
@@ -166,15 +135,18 @@ class Decorations {
     );
   }
 
-  Padding indicatorWithLabel(bool isOn, Color color, String label) {
+  Padding indicatorWithLabel(bool isRun, Color color, String label) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Center(
         child: Column(
           children: [
-            indicatorLight(isOn, color),
+            indicatorLight(isRun, color),
             SizedBox(width: 10),
-            Text(label, style: contentStyle),
+            Text(
+              label,
+              style: fontStyleBaloo(contentFontSize, color: Colors.grey[800]),
+            ),
           ],
         ),
       ),

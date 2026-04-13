@@ -6,6 +6,7 @@ import 'screen/detailReport.dart';
 import 'screen/trendScreen.dart';
 import 'screen/alarmScreen.dart';
 import 'screen/reportScreen.dart';
+import 'screen/loginScreen.dart';
 
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';

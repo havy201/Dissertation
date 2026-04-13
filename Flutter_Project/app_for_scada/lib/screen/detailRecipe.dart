@@ -3,12 +3,14 @@ import 'package:app_for_scada/widgets/botCloseDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import 'package:app_for_scada/global.dart';
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double space = Global.spacing;
 final double fontTitleSize = 16;
 final double fontSize = 12;
 
-class DetailRecipe extends StatelessWidget {
+class DetailRecipe extends StatelessWidget
+    with fontStyleMixin, itemDecorationMixin {
   const DetailRecipe({super.key});
 
   @override
@@ -33,13 +35,13 @@ class DetailRecipe extends StatelessWidget {
                   TableRow(
                     decoration: BoxDecoration(color: Color(0xFFF0F0F0)),
                     children: [
-                      Global.tableCell(
+                      tableCell(
                         'Tên công thức',
-                        style: Global.fontStyleBaloo(fontTitleSize),
+                        style: fontStyleBaloo(fontTitleSize),
                       ),
-                      Global.tableCell(
+                      tableCell(
                         recipe.name,
-                        style: Global.fontStyleBaloo(fontTitleSize),
+                        style: fontStyleBaloo(fontTitleSize),
                       ),
                     ],
                   ),
@@ -68,8 +70,8 @@ class DetailRecipe extends StatelessWidget {
   TableRow _row(String title, String content) {
     return TableRow(
       children: [
-        Global.tableCell(title, style: Global.fontStyleInter(fontSize)),
-        Global.tableCell(content, style: Global.fontStyleInter(fontSize)),
+        tableCell(title, style: fontStyleInter(fontSize)),
+        tableCell(content, style: fontStyleInter(fontSize)),
       ],
     );
   }

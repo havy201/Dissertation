@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../global.dart';
+import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
-class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
+class TopAppBar extends StatelessWidget
+    with fontStyleMixin
+    implements PreferredSizeWidget {
   final String title;
   final double sizeImage = 30;
   final double buttonExtent = 56;
@@ -18,7 +20,7 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title,
         textAlign: TextAlign.center,
-        style: Global.fontStyleBaloo(fontSize),
+        style: fontStyleBaloo(fontSize),
       ),
       leading: IconButton(
         onPressed: () {
