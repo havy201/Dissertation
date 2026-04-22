@@ -2,8 +2,8 @@ import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
-import '../model/Recipe.dart';
-import '../api/RecipeAPIServer.dart';
+import '../../model/Recipe.dart';
+import '../../api/RecipeAPIServer.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double itemSpacing = Global.spacing;
@@ -17,7 +17,8 @@ class RecipeScreen extends StatefulWidget {
   State<RecipeScreen> createState() => _RecipeScreenState();
 }
 
-class _RecipeScreenState extends State<RecipeScreen> with fontStyleMixin {
+class _RecipeScreenState extends State<RecipeScreen>
+    with fontStyleMixin, itemDecorationMixin {
   static Future<List<Recipe>>? _cachedRecipesFuture;
   late Future<List<Recipe>> _recipesFuture;
 
@@ -73,6 +74,14 @@ class _RecipeScreenState extends State<RecipeScreen> with fontStyleMixin {
           ),
         ),
       ),
+      floatingActionButton: Global.currentUser.role == 2
+          ? floatingBtn(() {
+              Navigator.pushNamed(
+                context,
+                '/addRecipe',
+              ).then((_) => _refreshRecipes());
+            })
+          : null,
       bottomNavigationBar: const BotNavigation(currentIndex: 1),
     );
   }
@@ -80,7 +89,7 @@ class _RecipeScreenState extends State<RecipeScreen> with fontStyleMixin {
   GestureDetector recipeCard(BuildContext context, Recipe recipe) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detailRecipe', arguments: recipe);
+        Navigator.pushNamed(context, '/recipeDetail', arguments: recipe);
       },
       child: Card(
         color: Color(0xffC2FCFF),

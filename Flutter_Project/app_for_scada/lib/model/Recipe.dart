@@ -27,7 +27,7 @@ class Recipe {
     required this.ratioWater,
   });
 
-  Map<String, dynamic> toData() {
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
       'ingredient1': ingredient1,
@@ -43,9 +43,7 @@ class Recipe {
     };
   }
 
-  Map<String, dynamic> toMap() => toData();
-
-  String toJson() => jsonEncode(toData());
+  String toJson() => jsonEncode(toMap());
 
   factory Recipe.fromMap(Map<String, dynamic> data) {
     return Recipe(
@@ -63,22 +61,7 @@ class Recipe {
     );
   }
 
-  factory Recipe.fromJson(String json) {
-    Map<String, dynamic> map = jsonDecode(json);
-    return Recipe(
-      name: map['name'],
-      ingredient1: map['ingredient1'],
-      ratio1: map['ratio1'],
-      ingredient2: map['ingredient2'],
-      ratio2: map['ratio2'],
-      ingredient3: map['ingredient3'],
-      ratio3: map['ratio3'],
-      spice: map['spice'],
-      ratioSpice: map['ratioSpice'],
-      water: map['water'],
-      ratioWater: map['ratioWater'],
-    );
-  }
+  factory Recipe.fromJson(String json) => Recipe.fromMap(jsonDecode(json));
 
   @override
   String toString() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/botNavigation.dart';
-import '../widgets/topAppBar.dart';
+import '../../widgets/botNavigation.dart';
+import '../../widgets/topAppBar.dart';
 
 class TrendScreen extends StatelessWidget {
   const TrendScreen({super.key});

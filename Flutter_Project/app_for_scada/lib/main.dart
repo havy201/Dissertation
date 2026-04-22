@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
-import 'screen/homeScreen.dart';
-import 'screen/recipeScreen.dart';
-import 'screen/detailRecipe.dart';
-import 'screen/detailReport.dart';
-import 'screen/trendScreen.dart';
-import 'screen/alarmScreen.dart';
-import 'screen/reportScreen.dart';
 import 'screen/loginScreen.dart';
+import 'screen/registerScreen.dart';
+import 'screen/infoUser.dart';
+import 'screen/updateInfoUser.dart';
+import 'screen/helpScreen.dart';
 
+import 'screen/staff/homeScreen.dart';
+import 'screen/staff/recipeScreen.dart';
+import 'screen/staff/recipeDetail.dart';
+import 'screen/staff/recipeModify.dart';
+import 'screen/staff/trendScreen.dart';
+import 'screen/staff/reportScreen.dart';
+import 'screen/staff/reportDetail.dart';
+import 'screen/staff/alarmScreen.dart';
+
+import 'screen/customer/checkScreen.dart';
+import 'screen/customer/orderScreen.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -27,15 +35,25 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       routes: {
+        '/loginScreen': (context) => LoginScreen(),
+        '/registerScreen': (context) => RegisterScreen(),
+        '/infoUser': (context) => InfoUser(),
+        '/updateInfoUser': (context) => UpdateInfoUser(),
+        '/helpScreen': (context) => HelpScreen(),
+
         '/homeScreen': (context) => HomeScreen(),
         '/recipeScreen': (context) => RecipeScreen(),
-        '/detailRecipe': (context) => DetailRecipe(),
+        '/recipeDetail': (context) => RecipeDetail(),
+        '/recipeModify': (context) => RecipeModify(),
         '/trendScreen': (context) => TrendScreen(),
         '/alarmScreen': (context) => AlarmScreen(),
         '/reportScreen': (context) => ReportScreen(),
-        '/detailReport': (context) => DetailReport(),
+        '/reportDetail': (context) => ReportDetail(),
+
+        '/orderScreen': (context) => OrderScreen(),
+        '/checkScreen': (context) => CheckScreen(),
       },
-      home: HomeScreen(),
+      home: OrderScreen(),
       // Scaffold(
       //   appBar: AppBar(title: Text('WebSocket Demo')),
       //   body: WebSocketDemo(),

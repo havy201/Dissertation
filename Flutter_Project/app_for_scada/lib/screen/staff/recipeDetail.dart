@@ -1,7 +1,6 @@
 import 'package:app_for_scada/model/Recipe.dart';
-import 'package:app_for_scada/widgets/botCloseDetailScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:app_for_scada/widgets/topAppBar.dart';
+import 'package:app_for_scada/widgets/titleAppBar.dart';
 import 'package:app_for_scada/global.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
@@ -9,15 +8,16 @@ final double space = Global.spacing;
 final double fontTitleSize = 16;
 final double fontSize = 12;
 
-class DetailRecipe extends StatelessWidget
+class RecipeDetail extends StatelessWidget
     with fontStyleMixin, itemDecorationMixin {
-  const DetailRecipe({super.key});
+  const RecipeDetail({super.key});
 
   @override
   Widget build(BuildContext context) {
     final Recipe recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
     return Scaffold(
-      appBar: const TopAppBar(title: 'Công thức'),
+      appBar: const TitleAppBar(title: 'Công thức'),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(left: space, right: space, top: space),
@@ -60,9 +60,6 @@ class DetailRecipe extends StatelessWidget
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: const BotCloseDetailScreen(
-        screenName: 'recipeScreen',
       ),
     );
   }

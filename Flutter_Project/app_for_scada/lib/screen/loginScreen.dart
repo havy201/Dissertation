@@ -1,15 +1,10 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 import 'package:app_for_scada/mixin/mixinFunctions.dart';
+import 'package:app_for_scada/mixin/mixinWidgetWithFunction.dart';
+import '../global.dart';
 
-final double space = 35;
-final double padding = 43;
-final double iconSize = 35;
-final double fontSizeLogin = 20;
-final Duration loginSnackBarDuration = Duration(seconds: 6); //text
-
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget with mixinNotification {
   const LoginScreen({super.key});
 
   @override
@@ -17,21 +12,100 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen>
-    with InputFieldDecorationMixin, fontStyleMixin, functionMixin {
+    with
+        InputFieldDecorationMixin,
+        fontStyleMixin,
+        particularFunctionMixin,
+        itemDecorationMixin {
+  static const double _space = 35;
+  static const double _padding = 43;
+  static const double _fontSizeLogin = 20;
+  static final Color _primaryBlue = Global.primaryBlue;
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  // Thêm GlobalKey để quản lý trạng thái của Form, phan biet cac form voi nhau
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
+    setState(() => _isLoading = true);
+    final overlay = Overlay.of(context, rootOverlay: true);
+    final blocker = OverlayEntry(
+      builder: (_) =>
+          const ModalBarrier(dismissible: false, color: Colors.transparent),
+    );
+    overlay.insert(blocker);
+
+    try {
+      final messageWidget = widget.notifyUser(
+        context,
+        'Đang đăng nhập...',
+        fontStyleBaloo(_fontSizeLogin, color: Colors.white),
+        _primaryBlue,
+      );
+      await messageWidget.closed;
+      if (!mounted) return;
+      // int i = int.parse('abc'); // Lỗi giả lập để test snackbar thất bại
+      // TODO: Gọi API thực
+      // final account = await ApiService.login(
+      //   _usernameController.text,
+      //   _passwordController.text,
+      // );
+      // Navigator.pushReplacementNamed(context, '/homeScreen');
+      if (Global.isLoggedIn) {
+        final messageWidget = widget.notifyUser(
+          context,
+          'Đăng nhập thành công!',
+          fontStyleBaloo(_fontSizeLogin, color: Colors.white),
+          Colors.green[900]!,
+        );
+        await messageWidget.closed;
+        if (!mounted) return;
+        String screenName = Global.currentUser.role == 0
+            ? '/orderScreen'
+            : '/homeScreen';
+        Navigator.pushReplacementNamed(context, screenName);
+      } else {
+        throw Exception('Đăng nhập thất bại');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      widget.notifyUser(
+        context,
+        'Đăng nhập thất bại!',
+        fontStyleBaloo(_fontSizeLogin, color: Colors.white),
+        Colors.red[900]!,
+      );
+    } finally {
+      blocker.remove();
+      if (mounted) {
+        _formKey.currentState?.reset();
+        _usernameController.clear();
+        _passwordController.clear();
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(padding),
+        padding: const EdgeInsets.all(_padding),
         child: Form(
-          key: _formKey, //
+          key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Align(
                 alignment: Alignment.centerRight,
@@ -41,123 +115,78 @@ class _LoginScreenState extends State<LoginScreen>
                   height: 58.37,
                 ),
               ),
-              SizedBox(height: space / 2),
-              Center(
-                child: Image.asset('assets/logo.png', width: 165, height: 165),
-              ),
-              SizedBox(height: space),
+              const SizedBox(height: _space / 2),
+              Image.asset('assets/logo.png', width: 165, height: 165),
+              const SizedBox(height: _space),
               Text('BatchFeed', style: fontStyleBaloo(32)),
               Text('Theo dõi từng mẻ', style: fontStyleBaloo(24)),
-              SizedBox(height: space),
+              const SizedBox(height: _space),
+
               TextFormField(
                 controller: _usernameController,
+                enabled: !_isLoading,
                 maxLength: 20,
                 decoration: InputDecoration(
+                  counterText: '',
                   prefixIcon: prefixIconPadding('lib/icons/loginUser.png'),
                   labelText: 'Tên đăng nhập...',
                   labelStyle: fontStyleInter(
-                    fontSizeLogin,
-                    isItalic: true,
-                    color: Color(0xFF032B91),
+                    _fontSizeLogin,
+                    color: const Color(0xFF032B91),
                   ),
                   contentPadding: contentPadding(),
                   hintText: 'Ví dụ: nguyenvana123',
                   hintStyle: fontStyleInter(
-                    fontSizeLogin,
-                    color: Color(0xFF032B91),
+                    _fontSizeLogin,
+                    color: const Color(0xFF032B91),
                   ),
                   border: outlineInputBorder(),
                   enabledBorder: outlineInputBorder(),
                   focusedBorder: outlineInputBorder(),
                 ),
-                onSaved: (newValue) => print(
-                  'Tên đăng nhập: $newValue',
-                ), // Lưu giá trị khi form được lưu
-                validator: requiredFieldValidator(
-                  'Vui lòng nhập tên đăng nhập',
-                ),
+                validator: mesIFieldValidator('Vui lòng nhập tên đăng nhập'),
               ),
-              SizedBox(height: space),
+              const SizedBox(height: _space),
+
+              // ── Password ──────────────────────────────
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
+                enabled: !_isLoading,
                 maxLength: 20,
                 decoration: InputDecoration(
+                  counterText: '',
                   prefixIcon: prefixIconPadding('lib/icons/loginPassword.png'),
                   suffixIcon: suffixIconPadding(_obscurePassword, () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
+                    setState(() => _obscurePassword = !_obscurePassword);
                   }),
                   labelText: 'Mật khẩu...',
                   labelStyle: fontStyleInter(
-                    fontSizeLogin,
-                    isItalic: true,
-                    color: Color(0xFF032B91),
+                    _fontSizeLogin,
+                    color: const Color(0xFF032B91),
                   ),
                   contentPadding: contentPadding(),
                   hintText: 'Ví dụ: @123nguyenvana',
                   hintStyle: fontStyleInter(
-                    fontSizeLogin,
-                    color: Color(0xFF032B91),
+                    _fontSizeLogin,
+                    color: const Color(0xFF032B91),
                   ),
                   border: outlineInputBorder(),
                   enabledBorder: outlineInputBorder(),
                   focusedBorder: outlineInputBorder(),
                 ),
-
-                onSaved: (newValue) => print(
-                  'Mật khẩu: $newValue',
-                ), // Lưu giá trị khi form được lưu
-                validator: requiredFieldValidator('Vui lòng nhập mật khẩu'),
+                validator: mesIFieldValidator('Vui lòng nhập mật khẩu'),
               ),
-              Spacer(),
-              FilledButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: loginSnackBarDuration,
-                        content: AnimatedTextKit(
-                          animatedTexts: [
-                            TypewriterAnimatedText(
-                              'Đang đăng nhập...',
-                              textStyle: fontStyleBaloo(
-                                16,
-                                color: Colors.white,
-                              ),
-                              speed: Duration(milliseconds: 100),
-                            ),
-                          ],
-                          totalRepeatCount: 1,
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: Colors.green[900],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                    _formKey.currentState!.reset();
-                    _usernameController.clear();
-                    _passwordController.clear();
-                    setState(() {});
-                  }
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xff00F3FF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  'Đăng nhập',
-                  style: fontStyleBaloo(16, color: Colors.white),
-                ),
+              const Spacer(),
+              filledBtn(
+                _isLoading ? null : _handleLogin,
+                'Đăng nhập',
+                color: const Color(0xff00F3FF),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: _isLoading
+                    ? null
+                    : () => Navigator.pushNamed(context, '/registerScreen'),
                 child: Text(
                   'Chưa có tài khoản? Đăng ký ngay!',
                   style: fontStyleBaloo(16),

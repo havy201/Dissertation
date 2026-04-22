@@ -1,7 +1,7 @@
 import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
-import '../widgets/botNavigation.dart';
-import '../widgets/topAppBar.dart';
+import '../../widgets/botNavigation.dart';
+import '../../widgets/topAppBar.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double fontSize = 12;
@@ -59,7 +59,7 @@ class _ReportScreenState extends State<ReportScreen> with fontStyleMixin {
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detailReport');
+        Navigator.pushNamed(context, '/reportDetail');
       },
       child: Container(
         decoration: BoxDecoration(

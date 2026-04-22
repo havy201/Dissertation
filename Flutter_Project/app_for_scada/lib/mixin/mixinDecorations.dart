@@ -4,7 +4,12 @@ mixin InputFieldDecorationMixin {
   Padding prefixIconPadding(String assetPath) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-      child: Image.asset(assetPath, width: 35, height: 35),
+      child: Image.asset(
+        assetPath,
+        width: 35,
+        height: 35,
+        color: Color(0xFF032B91),
+      ),
     );
   }
 
@@ -50,15 +55,63 @@ mixin itemDecorationMixin {
     );
   }
 
-  BoxDecoration containerDecoration() {
+  BoxDecoration containerDecoration({Color? color}) {
     return BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Color(0xff8C8C8C), width: 3),
+      border: Border.all(color: color ?? Color(0xff8C8C8C), width: 3),
+    );
+  }
+
+  FloatingActionButton floatingBtn(VoidCallback? onPressed) {
+    return FloatingActionButton(
+      onPressed: onPressed,
+      shape: const CircleBorder(
+        side: BorderSide(color: Color(0xFF032B91), width: 4),
+      ),
+      backgroundColor: Colors.white,
+      child: Icon(Icons.add, size: 40, color: Color(0xFF032B91)),
+    );
+  }
+
+  Widget iconBtnCustom(VoidCallback? onPressed) {
+    return FloatingActionButton(
+      onPressed: onPressed,
+      shape: const CircleBorder(
+        side: BorderSide(color: Color(0xFF032B91), width: 4),
+      ),
+      elevation: 0,
+
+      backgroundColor: Colors.white,
+      child: Icon(Icons.add, size: 40, color: Color(0xFF032B91)),
+    );
+  }
+
+  SizedBox filledBtn(VoidCallback? onPressed, String text, {Color? color}) {
+    return SizedBox(
+      width: 276,
+      height: 46,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: color ?? const Color(0xFF032B91),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontFamily: 'Baloo',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }
-
 mixin fontStyleMixin {
   TextStyle fontStyleBaloo(double size, {Color? color}) {
     return TextStyle(

@@ -1,7 +1,7 @@
 import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
-import '../widgets/botNavigation.dart';
-import '../widgets/topAppBar.dart';
+import '../../widgets/botNavigation.dart';
+import '../../widgets/topAppBar.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 

@@ -1,9 +1,25 @@
+import 'package:app_for_scada/model/Account.dart';
 import 'package:flutter/material.dart';
 
 class Global {
   static double spacing = 20;
   static double padding = 10;
   static double titleGap = 5;
+  static Color primaryBlue = Color(0xFF032B91);
+  //gia s du lieu dang nhap, sau nay se thay bang API
+  // static Account? currentUser;
+  static Account currentUser = Account(
+    fullname: 'Đoàn Hạ Vy',
+    username: 'havydoan',
+    password: '122',
+    role: 0,
+    phone: '0978414573',
+  );
+
+  static bool isLoggedIn =
+      true; // Tạm thời set true để test giao diện, sau này sẽ dựa vào API
+
+  
   static TextStyle fontStyleBaloo(double size, {Color? color}) => TextStyle(
     fontFamily: 'Baloo',
     fontSize: size,
@@ -43,4 +59,5 @@ class Global {
 
   static String baseUrl = 'https://68944fbebe3700414e12a830.mockapi.io/school';
   static String recipeEndpoint = 'Recipe';
+  static String accountEndpoint = 'Account';
 }

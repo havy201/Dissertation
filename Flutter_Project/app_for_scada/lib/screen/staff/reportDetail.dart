@@ -1,32 +1,27 @@
-import 'package:app_for_scada/widgets/botCloseDetailScreen.dart';
-import 'package:app_for_scada/widgets/topAppBar.dart';
+import 'package:app_for_scada/widgets/titleAppBar.dart';
 import 'package:flutter/material.dart';
-import '../global.dart';
+import '../../global.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double itemSpacing = Global.spacing;
 final double padding = Global.padding;
 final double sizeAvatar = 50;
 
-class DetailReport extends StatefulWidget {
-  const DetailReport({super.key});
+class ReportDetail extends StatefulWidget {
+  const ReportDetail({super.key});
 
   @override
-  State<DetailReport> createState() => _DetailReportState();
+  State<ReportDetail> createState() => _ReportDetailState();
 }
 
-class _DetailReportState extends State<DetailReport> with fontStyleMixin {
+class _ReportDetailState extends State<ReportDetail> with fontStyleMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopAppBar(title: 'Báo cáo'),
+      appBar: const TitleAppBar(title: 'Báo cáo'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.only(
-          top: itemSpacing,
-          left: padding,
-          right: padding,
-        ),
+        padding: EdgeInsets.all(itemSpacing),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -89,57 +84,53 @@ class _DetailReportState extends State<DetailReport> with fontStyleMixin {
           ),
         ),
       ),
-      bottomNavigationBar: const BotCloseDetailScreen(
-        screenName: 'reportScreen',
+    );
+  }
+
+  Container listItem() {
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: itemSpacing,
+          vertical: itemSpacing / 2,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 30,
+              width: 30,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Center(
+                child: Image(
+                  image: AssetImage('lib/animals/dog.png'),
+                  height: 24,
+                  width: 24,
+                ),
+              ),
+            ),
+            SizedBox(width: itemSpacing),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Nguyên liệu', style: fontStyleBaloo(16)),
+                  Text(
+                    '100g hạt bắp, 20g đường, 10g sữa đặc, 5g muối, 2g vani, 1000ml nước, 3 quả trứng, 100g bột mì, 30g bơ, 200ml sữa tươi, 4 quả táo',
+                    textAlign: TextAlign.justify,
+                    style: fontStyleInter(16),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-  Container listItem() {
-  return Container(
-    child: Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: itemSpacing,
-        vertical: itemSpacing / 2,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 30,
-            width: 30,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Center(
-              child: Image(
-                image: AssetImage('lib/animals/dog.png'),
-                height: 24,
-                width: 24,
-              ),
-            ),
-          ),
-          SizedBox(width: itemSpacing),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Nguyên liệu', style: fontStyleBaloo(16)),
-                Text(
-                  '100g hạt bắp, 20g đường, 10g sữa đặc, 5g muối, 2g vani, 1000ml nước, 3 quả trứng, 100g bột mì, 30g bơ, 200ml sữa tươi, 4 quả táo',
-                  textAlign: TextAlign.justify,
-                  style: fontStyleInter(16),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
-}
-
-

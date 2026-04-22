@@ -2,8 +2,8 @@ import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
-import '../model/Alarm.dart';
-import '../api/AlarmAPIServer.dart';
+import '../../model/Alarm.dart';
+import '../../api/AlarmAPIServer.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double padding = Global.spacing;

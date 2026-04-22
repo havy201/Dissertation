@@ -1,15 +1,41 @@
 import 'dart:convert';
 
 class Account {
-  int id;
+  String fullname;
   String username;
-  int password;
-  bool role; // true: manager, false: employee
+  String password;
+  int role; // 0: customer, 1: staff, 2: manager
+  String phone;
 
   Account({
-    required this.id,
+    required this.fullname,
     required this.username,
     required this.password,
     required this.role,
+    required this.phone,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': fullname,
+      'username': username,
+      'password': password,
+      'role': role,
+      'phone': phone,
+    };
+  }
+
+  String toJson() => jsonEncode(toMap());
+
+  factory Account.fromMap(Map<String, dynamic> data) {
+    return Account(
+      fullname: data['id'],
+      username: data['username'],
+      password: data['password'],
+      role: data['role'],
+      phone: data['phone'],
+    );
+  }
+
+  factory Account.fromJson(String json) => Account.fromMap(jsonDecode(json));
 }
