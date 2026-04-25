@@ -2,6 +2,7 @@ import 'package:app_for_scada/model/Account.dart';
 import 'package:flutter/material.dart';
 
 class Global {
+  static double bottomWidth = 50;
   static double spacing = 20;
   static double padding = 10;
   static double titleGap = 5;

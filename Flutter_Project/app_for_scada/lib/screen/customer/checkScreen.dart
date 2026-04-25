@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../widgets/topAppBar.dart';
-import '../../widgets/botNavigation.dart';
-
 class CheckScreen extends StatefulWidget {
   const CheckScreen({super.key});
 
@@ -16,7 +14,7 @@ class _CheckScreenState extends State<CheckScreen> {
       appBar: TopAppBar(title: 'Theo dõi đơn hàng'),
       backgroundColor: Colors.white,
       body: Column(),
-      bottomNavigationBar: const BotNavigation(currentIndex: 6),
+  
     );
   }
 }

@@ -57,9 +57,9 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
     showDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: Text('Cảnh báo', style: fontStyleBaloo(_fontSize)),
+        title: Text('Thay đổi mật khẩu?', style: fontStyleBaloo(_fontSize)),
         content: Text(
-          'Xác nhận cập nhật mật khẩu?',
+          'Cập nhật mật khẩu tài khoản của bạn!',
           style: fontStyleBaloo(_fontSize),
         ),
         actions: [

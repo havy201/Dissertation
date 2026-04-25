@@ -2,10 +2,10 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/topAppBar.dart';
-import '../../widgets/botNavigation.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 import '../../global.dart';
 import 'package:app_for_scada/mixin/mixinFunctions.dart';
+import 'package:app_for_scada/mixin/mixinWidgetWithFunction.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 // ✅ Model sản phẩm — import từ file models/product.dart sau này
@@ -29,14 +29,14 @@ class OrderItem {
   int quantity;
 
   OrderItem()
-      : quantityController = TextEditingController(text: '1'),
-        quantity = 1,
-        selectedProductId = null;
+    : quantityController = TextEditingController(text: '1'),
+      quantity = 1,
+      selectedProductId = null;
 
   void dispose() => quantityController.dispose();
 }
 
-class OrderScreen extends StatefulWidget {
+class OrderScreen extends StatefulWidget with mixinNotification {
   const OrderScreen({super.key});
 
   @override
@@ -49,8 +49,7 @@ class _OrderScreenState extends State<OrderScreen>
         fontStyleMixin,
         InputFieldDecorationMixin,
         particularFunctionMixin,
-        AutomaticKeepAliveClientMixin { // ✅ Giữ state khi chuyển tab
-
+        AutomaticKeepAliveClientMixin {
   static const double _fontSize = 20;
   static const double _slidableExtentRatio = 0.22;
   static const Color _buttonColor = Color(0xff00F3FF);
@@ -81,6 +80,20 @@ class _OrderScreenState extends State<OrderScreen>
     setState(() => _orderItems.removeAt(index));
   }
 
+  void _resetOrderForm() {
+    for (final item in _orderItems) {
+      item.dispose();
+    }
+
+    setState(() {
+      _orderItems
+        ..clear()
+        ..add(OrderItem());
+    });
+
+    _formKey.currentState?.reset();
+  }
+
   Future<void> _handleOrder() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
@@ -89,52 +102,54 @@ class _OrderScreenState extends State<OrderScreen>
 
     final overlay = Overlay.of(context, rootOverlay: true);
     final blocker = OverlayEntry(
-      builder: (_) => const ModalBarrier(
-        dismissible: false,
-        color: Colors.transparent,
-      ),
+      builder: (_) =>
+          const ModalBarrier(dismissible: false, color: Colors.transparent),
     );
     overlay.insert(blocker);
 
     try {
       // ── Snackbar loading ────────────────────────
-      final controller = ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(milliseconds: 3000),
-          content: AnimatedTextKit(
-            animatedTexts: [
-              TypewriterAnimatedText(
-                'Đang đặt hàng...',
-                textStyle: fontStyleBaloo(_fontSize, color: Colors.white),
-                speed: const Duration(milliseconds: 100),
-              ),
-            ],
-            totalRepeatCount: 1,
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.green[900],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
+      final controller = widget.notifyUser(
+        context,
+        'Đang đặt hàng...',
+        fontStyleBaloo(_fontSize, color: Colors.white),
+        Colors.grey,
       );
       await controller.closed;
       if (!mounted) return;
 
-      // ── Gọi API ─────────────────────────────────
       // final payload = _orderItems
       //     .map((item) => {
       //           'product_id': item.selectedProductId,
       //           'quantity': item.quantity,
       //         })
       //     .toList();
-      // await ApiService.placeOrder(payload);
-      // Navigator.pushReplacementNamed(context, '/trackingScreen');
 
+      // // TODO: đổi sang API thật, ví dụ:
+      // // final isSuccess = await ApiService.placeOrder(payload);
+      // final isSuccess = payload.isNotEmpty;
+
+      // if (!isSuccess) {
+      //   throw Exception('Đặt hàng thất bại từ API');
+      // }
+
+      _resetOrderForm();
+
+      widget.notifyUser(
+        context,
+        'Đặt hàng thành công',
+        fontStyleBaloo(_fontSize, color: Colors.white),
+        Colors.green,
+      );
+
+      // Navigator.pushReplacementNamed(context, '/trackingScreen');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Đặt hàng thất bại: $e')),
+      widget.notifyUser(
+        context,
+        'Đặt hàng thất bại',
+        fontStyleBaloo(_fontSize),
+        Colors.red,
       );
     } finally {
       blocker.remove();
@@ -186,10 +201,9 @@ class _OrderScreenState extends State<OrderScreen>
               ),
               // ✅ Import từ kProductList
               items: kProductList
-                  .map((p) => DropdownMenuItem(
-                        value: p.id,
-                        child: Text(p.name),
-                      ))
+                  .map(
+                    (p) => DropdownMenuItem(value: p.id, child: Text(p.name)),
+                  )
                   .toList(),
               onChanged: _isLoading
                   ? null
@@ -215,8 +229,8 @@ class _OrderScreenState extends State<OrderScreen>
                       if (item.quantity > 1) {
                         setState(() {
                           item.quantity--;
-                          item.quantityController.text =
-                              item.quantity.toString();
+                          item.quantityController.text = item.quantity
+                              .toString();
                         });
                       }
                     },
@@ -253,8 +267,7 @@ class _OrderScreenState extends State<OrderScreen>
                   : () {
                       setState(() {
                         item.quantity++;
-                        item.quantityController.text =
-                            item.quantity.toString();
+                        item.quantityController.text = item.quantity.toString();
                       });
                     },
               icon: Icon(Icons.add, color: primaryBlue, size: 20),
@@ -275,7 +288,7 @@ class _OrderScreenState extends State<OrderScreen>
       appBar: TopAppBar(title: 'Đặt hàng'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(spacing),
+        padding: screenPadding(),
         child: SlidableAutoCloseBehavior(
           child: Column(
             children: [
@@ -294,15 +307,11 @@ class _OrderScreenState extends State<OrderScreen>
                 ),
               ),
               SizedBox(height: spacing),
-              filledBtn(
-                _isLoading ? null : _handleOrder,
-                'Đặt hàng',
-              ),
+              filledBtn(_isLoading ? null : _handleOrder, 'Đặt hàng'),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: const BotNavigation(currentIndex: 5),
     );
   }
 }

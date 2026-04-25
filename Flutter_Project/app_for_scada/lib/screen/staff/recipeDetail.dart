@@ -20,7 +20,7 @@ class RecipeDetail extends StatelessWidget
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(left: space, right: space, top: space),
+          padding: screenPadding(),
           child: Column(
             children: [
               Table(

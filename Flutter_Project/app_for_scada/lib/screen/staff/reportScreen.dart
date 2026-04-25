@@ -1,6 +1,5 @@
 import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/botNavigation.dart';
 import '../../widgets/topAppBar.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
@@ -15,14 +14,15 @@ class ReportScreen extends StatefulWidget {
   State<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportScreenState extends State<ReportScreen> with fontStyleMixin {
+class _ReportScreenState extends State<ReportScreen>
+    with fontStyleMixin, itemDecorationMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TopAppBar(title: 'Báo cáo'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(spacing),
+        padding: screenPadding(),
         child: GridView.count(
           clipBehavior: Clip.none, //ko bị cắt khi có shadow
           childAspectRatio: 167 / 251, //
@@ -43,7 +43,6 @@ class _ReportScreenState extends State<ReportScreen> with fontStyleMixin {
           ],
         ),
       ),
-      bottomNavigationBar: const BotNavigation(currentIndex: 4),
     );
   }
 

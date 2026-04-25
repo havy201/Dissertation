@@ -18,7 +18,6 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  // ✅ Các tab theo role — khởi tạo 1 lần, không tạo lại
   late final List<Widget> _staffScreens = const [
     HomeScreen(),
     RecipeScreen(),
@@ -37,14 +36,11 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // ✅ IndexedStack giữ nguyên state của tất cả tab
-      // Widget không bị dispose khi chuyển tab
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: _buildBottomNav(),
+    return Stack(
+      children: [
+        IndexedStack(index: _currentIndex, children: _screens),
+        Positioned(bottom: 0, left: 0, right: 0, child: _buildBottomNav()),
+      ],
     );
   }
 
@@ -53,7 +49,7 @@ class _MainShellState extends State<MainShell> {
         Global.currentUser.role == 1 || Global.currentUser.role == 2;
 
     return Container(
-      height: 50,
+      height: Global.bottomWidth,
       decoration: const BoxDecoration(color: Colors.white),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -64,17 +60,17 @@ class _MainShellState extends State<MainShell> {
   }
 
   List<Widget> _staffNavItems() => [
-        _navItem('lib/icons/home_dark.png', 'lib/icons/home_light.png', 0),
-        _navItem('lib/icons/recipe_dark.png', 'lib/icons/recipe_light.png', 1),
-        _navItem('lib/icons/trend_dark.png', 'lib/icons/trend_light.png', 2),
-        _navItem('lib/icons/alarm_dark.png', 'lib/icons/alarm_light.png', 3),
-        _navItem('lib/icons/report_dark.png', 'lib/icons/report_light.png', 4),
-      ];
+    _navItem('lib/icons/home_dark.png', 'lib/icons/home_light.png', 0),
+    _navItem('lib/icons/recipe_dark.png', 'lib/icons/recipe_light.png', 1),
+    _navItem('lib/icons/trend_dark.png', 'lib/icons/trend_light.png', 2),
+    _navItem('lib/icons/alarm_dark.png', 'lib/icons/alarm_light.png', 3),
+    _navItem('lib/icons/report_dark.png', 'lib/icons/report_light.png', 4),
+  ];
 
   List<Widget> _customerNavItems() => [
-        _navItem('lib/icons/home_dark.png', 'lib/icons/home_light.png', 0),
-        _navItem('lib/icons/recipe_dark.png', 'lib/icons/recipe_light.png', 1),
-      ];
+    _navItem('lib/icons/home_dark.png', 'lib/icons/home_light.png', 0),
+    _navItem('lib/icons/recipe_dark.png', 'lib/icons/recipe_light.png', 1),
+  ];
 
   Widget _navItem(String iconActive, String iconInactive, int index) {
     final bool isSelected = _currentIndex == index;

@@ -14,6 +14,7 @@ import 'screen/staff/reportScreen.dart';
 import 'screen/staff/reportDetail.dart';
 import 'screen/staff/alarmScreen.dart';
 
+import 'widgets/mainShell.dart';
 import 'screen/customer/checkScreen.dart';
 import 'screen/customer/orderScreen.dart';
 import 'package:web_socket_channel/io.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         '/updateInfoUser': (context) => UpdateInfoUser(),
         '/helpScreen': (context) => HelpScreen(),
 
+        '/mainShell': (context) => MainShell(),
         '/homeScreen': (context) => HomeScreen(),
         '/recipeScreen': (context) => RecipeScreen(),
         '/recipeDetail': (context) => RecipeDetail(),
@@ -53,7 +55,7 @@ class MyApp extends StatelessWidget {
         '/orderScreen': (context) => OrderScreen(),
         '/checkScreen': (context) => CheckScreen(),
       },
-      home: OrderScreen(),
+      home: TrendScreen(),
       // Scaffold(
       //   appBar: AppBar(title: Text('WebSocket Demo')),
       //   body: WebSocketDemo(),

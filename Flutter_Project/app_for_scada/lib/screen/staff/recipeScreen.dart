@@ -1,6 +1,5 @@
 import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
-import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import '../../model/Recipe.dart';
 import '../../api/RecipeAPIServer.dart';
@@ -43,7 +42,7 @@ class _RecipeScreenState extends State<RecipeScreen>
       appBar: const TopAppBar(title: 'Công thức'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(itemSpacing),
+        padding: screenPadding(),
         child: RefreshIndicator(
           color: Color(0xFF032B91),
           strokeWidth: 3,
@@ -82,7 +81,6 @@ class _RecipeScreenState extends State<RecipeScreen>
               ).then((_) => _refreshRecipes());
             })
           : null,
-      bottomNavigationBar: const BotNavigation(currentIndex: 1),
     );
   }
 

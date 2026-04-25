@@ -1,155 +1,166 @@
-import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/botNavigation.dart';
-import '../../widgets/topAppBar.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import '../../widgets/topAppBar.dart';
+import '../../global.dart';
 
-final double itemSpacing = Global.spacing;
-final double titleGap = Global.titleGap;
-final double padding = Global.padding;
-final double fontSize = 20;
-final double contentFontSize = 14;
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen>
+class HomeScreen extends StatelessWidget
     with fontStyleMixin, itemDecorationMixin {
-  bool isRunning = true;
+  const HomeScreen({super.key});
+
+  static const double _fontSize = 20;
+  static const double _contentFontSize = 14;
+
+  // TODO: Thay bằng dữ liệu thực từ API/WebSocket
+  static const List<({String label, Color color})> _statusItems = [
+    (label: 'Idle', color: Color(0xff898989)),
+    (label: 'Run', color: Color(0xff00FF0A)),
+    (label: 'Abort', color: Color(0xffFF6A00)),
+    (label: 'Stop', color: Color(0xffFF0000)),
+    (label: 'Pause', color: Color(0xffFFF600)),
+    (label: 'Hold', color: Color(0xffFFC800)),
+    (label: 'Restart', color: Color(0xff00BBFF)),
+    (label: 'Complete', color: Color(0xff1F7300)),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final spacing = Global.spacing;
+    final titleGap = Global.titleGap;
+    final padding = Global.padding;
+    final bottomWidth = Global.bottomWidth;
+
+    // TODO: Thay bằng dữ liệu thực từ API
+    const bool isAuto = true;
+    const bool isManu = false;
+    const bool isRunning = true;
+    const double processPercent = 0.7;
+    const String processLabel = 'Trộn nguyên liệu';
+
     return Scaffold(
       appBar: const TopAppBar(title: 'BatchFeed'),
       backgroundColor: Colors.white,
+      // ✅ Không có bottomNavigationBar — đã có trong MainShell
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(itemSpacing),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Chế độ hoạt động', style: fontStyleBaloo(fontSize)),
-              SizedBox(height: titleGap),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(padding),
-                decoration: containerDecoration(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    indicatorLight(
-                      isRunning,
-                      Color(0xff1F7300), //đèn báo),
+        padding: screenPadding(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Chế độ hoạt động', style: fontStyleBaloo(_fontSize)),
+            SizedBox(height: titleGap),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(padding),
+              decoration: containerDecoration(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _indicatorLight(isAuto, const Color(0xff1F7300)),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Auto',
+                    style: fontStyleBaloo(
+                      _contentFontSize,
+                      color: Colors.grey[800],
                     ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Auto',
-                      style: fontStyleBaloo(
-                        contentFontSize,
-                        color: Colors.grey[800],
-                      ),
+                  ),
+                  const SizedBox(width: 90),
+                  _indicatorLight(isManu, const Color(0xff1F7300)),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Manu',
+                    style: fontStyleBaloo(
+                      _contentFontSize,
+                      color: Colors.grey[800],
                     ),
-                    SizedBox(width: 90),
-                    indicatorLight(
-                      isRunning,
-                      Color(0xff1F7300), //đèn báo),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Manu',
-                      style: fontStyleBaloo(
-                        contentFontSize,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SizedBox(height: itemSpacing),
-              Text('Trạng thái hệ thống', style: fontStyleBaloo(fontSize)),
-              SizedBox(height: titleGap),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(padding),
-                decoration: containerDecoration(),
-                child: Table(
-                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  children: [
-                    TableRow(
-                      children: [
-                        indicatorWithLabel(true, Color(0xff898989), 'Idle'),
-                        indicatorWithLabel(true, Color(0xff00FF0A), 'Run'),
-                        indicatorWithLabel(true, Color(0xffFF6A00), 'Abort'),
-                        indicatorWithLabel(true, Color(0xffFF0000), 'Stop'),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        indicatorWithLabel(true, Color(0xffFFF600), 'Pause'),
-                        indicatorWithLabel(true, Color(0xffFFC800), 'Hold'),
-                        indicatorWithLabel(true, Color(0xff00BBFF), 'Restart'),
-                        indicatorWithLabel(true, Color(0xff1F7300), 'Complete'),
-                      ],
-                    ),
-                  ],
-                ),
+            ),
+            SizedBox(height: spacing),
+
+            Text('Trạng thái hệ thống', style: fontStyleBaloo(_fontSize)),
+            SizedBox(height: titleGap),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(padding),
+              decoration: containerDecoration(),
+              child: Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+
+                children: [
+                  _buildStatusRow(_statusItems.sublist(0, 4), isRunning),
+                  _buildStatusRow(_statusItems.sublist(4, 8), isRunning),
+                ],
               ),
-              SizedBox(height: itemSpacing),
-              Text('Công đoạn', style: fontStyleBaloo(fontSize)),
-              SizedBox(height: titleGap),
-              Center(child: process('70%', 'Trộn nguyên liệu')),
-            ],
-          ),
+            ),
+            SizedBox(height: spacing),
+
+            Text('Công đoạn', style: fontStyleBaloo(_fontSize)),
+            SizedBox(height: titleGap),
+            Center(child: _buildProcess(processPercent, processLabel)),
+          ],
         ),
       ),
-
-      bottomNavigationBar: const BotNavigation(currentIndex: 0),
     );
   }
 
-  Container indicatorLight(bool isOn, Color color) {
+  TableRow _buildStatusRow(
+    List<({String label, Color color})> items,
+    bool isRunning,
+  ) {
+    return TableRow(
+      children: items
+          .map((item) => _indicatorWithLabel(isRunning, item.color, item.label))
+          .toList(),
+    );
+  }
+
+  Widget _indicatorLight(bool isOn, Color color) {
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
         color: isOn ? color : Colors.white,
         shape: BoxShape.circle,
-        border: isOn ? null : Border.all(color: Color(0xff8C8C8C), width: 2),
+        border: isOn
+            ? null
+            : Border.all(color: const Color(0xff8C8C8C), width: 2),
       ),
     );
   }
 
-  CircularPercentIndicator process(String percent, String footer) {
-    return CircularPercentIndicator(
-      radius: 80,
-      lineWidth: 20,
-      percent: 0.7,
-      center: Text(percent, style: Global.fontStyleBaloo(fontSize)),
-      progressColor: Color(0xFF032B91),
-      backgroundColor: Color(0xFFC3C3C3),
-      circularStrokeCap: CircularStrokeCap.round,
-      footer: Text(footer, style: Global.fontStyleBaloo(fontSize)),
-    );
-  }
-
-  Padding indicatorWithLabel(bool isRun, Color color, String label) {
+  Widget _indicatorWithLabel(bool isOn, Color color, String label) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Center(
         child: Column(
           children: [
-            indicatorLight(isRun, color),
-            SizedBox(width: 10),
+            _indicatorLight(isOn, color),
+            const SizedBox(height: 4), // ✅ Sửa SizedBox width → height
             Text(
               label,
-              style: fontStyleBaloo(contentFontSize, color: Colors.grey[800]),
+              style: fontStyleBaloo(_contentFontSize, color: Colors.grey[800]),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildProcess(double percent, String label) {
+    return CircularPercentIndicator(
+      radius: 80,
+      lineWidth: 20,
+      percent: percent,
+      center: Text(
+        '${(percent * 100).toInt()}%', // ✅ Tính từ số thay vì hardcode string
+        style: fontStyleBaloo(_fontSize),
+      ),
+      progressColor: const Color(0xFF032B91),
+      backgroundColor: const Color(0xFFC3C3C3),
+      circularStrokeCap: CircularStrokeCap.round,
+      footer: Text(label, style: fontStyleBaloo(_fontSize)),
     );
   }
 }

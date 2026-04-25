@@ -71,10 +71,7 @@ class _LoginScreenState extends State<LoginScreen>
         );
         await messageWidget.closed;
         if (!mounted) return;
-        String screenName = Global.currentUser.role == 0
-            ? '/orderScreen'
-            : '/homeScreen';
-        Navigator.pushReplacementNamed(context, screenName);
+        Navigator.pushReplacementNamed(context, '/mainShell');
       } else {
         throw Exception('Đăng nhập thất bại');
       }

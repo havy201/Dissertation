@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<DownloadTask xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ProjectInfo ProjectId="f12202d1-1cee-4e40-ab6e-0c95c0609b03" ESProjectName="PLC_DoAn" ESDeviceName="HMI_RT_1" RtProjectFolderName="PLC_DoAn.PC-System_1[SIMATIC PC station - WinCC Unified Scada RT]" RtProjectName="PLC_DoAn.PC-System_1[SIMATIC PC station - WinCC Unified Scada RT]" DeviceType="SIMATIC PC station - WinCC Unified Scada RT" DeviceVersion="16.0.0.0" CreationTime="01/07/2026 10:39:55" FirmwareFileName="" RuntimeFileName="" PRCV="2.0.0.0" RTCV="0.0.0.0" RTReleaseNo="16.0.0.0" ImageReleaseNo="0.0.0.0" />
+  <DeltaDownload>deltas\111\cds.rdf</DeltaDownload>
+  <DeltaDownload>deltas\111\ChromIdentification.rdf</DeltaDownload>
+  <DeltaDownload>deltas\111\deltaMain.rdf</DeltaDownload>
+  <DeltaDownload>deltas\111\deltaTextLibrary_21_1033.rdf</DeltaDownload>
+  <DeltaDownload>deltas\111\deltaTextLibrary_90_1033.rdf</DeltaDownload>
+  <DeltaDownload>deltas\111\ProjectCharacteristics.rdf</DeltaDownload>
+  <DeltaDownload>deltas\111\config\config.level</DeltaDownload>
+  <DeltaDownload>deltas\111\screens\screen_94.rdf</DeltaDownload>
+</DownloadTask>

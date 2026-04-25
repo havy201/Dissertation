@@ -1,6 +1,5 @@
 import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
-import 'package:app_for_scada/widgets/botNavigation.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import '../../model/Alarm.dart';
 import '../../api/AlarmAPIServer.dart';
@@ -39,7 +38,7 @@ class _AlarmScreenState extends State<AlarmScreen>
       appBar: const TopAppBar(title: 'Cảnh báo'),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(padding),
+        padding: screenPadding(),
         child: Table(
           border: TableBorder.all(color: Colors.grey),
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -61,7 +60,6 @@ class _AlarmScreenState extends State<AlarmScreen>
           ],
         ),
       ),
-      bottomNavigationBar: const BotNavigation(currentIndex: 3),
     );
   }
 
