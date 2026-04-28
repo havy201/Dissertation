@@ -117,13 +117,7 @@ mixin itemDecorationMixin {
 
   EdgeInsets screenPadding() {
     final spacing = Global.spacing;
-    final bottomWidth = Global.bottomWidth;
-    return EdgeInsets.only(
-      left: spacing,
-      right: spacing,
-      top: spacing,
-      bottom: bottomWidth + spacing,
-    );
+    return EdgeInsets.all(spacing);
   }
 }
 mixin fontStyleMixin {

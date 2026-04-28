@@ -22,7 +22,7 @@ class _ReportDetailState extends State<ReportDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TitleAppBar(title: 'Báo cáo'),
+      appBar: const TitleAppBar(title: 'Chi tiết đơn hàng'),
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.all(spacing),
@@ -112,6 +112,14 @@ class _ReportDetailState extends State<ReportDetail>
                           Color(0xff9D9D9D),
                           'Thời gian kết thúc',
                           '08:00 AM',
+                        ),
+                        _divider(),
+                        _buildInfoRow(
+                          'lib/icons/endTime.png',
+                          Color(0xff9D9D9D),
+                          'Thời gian kết thúc',
+                          '08:00 AM',
+                          showArrow: true,
                         ),
                       ],
                     ),

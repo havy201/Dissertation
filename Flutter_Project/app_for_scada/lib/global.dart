@@ -13,7 +13,7 @@ class Global {
     fullname: 'Đoàn Hạ Vy',
     username: 'havydoan',
     password: '122',
-    role: 0,
+    role: 2,
     phone: '0978414573',
   );
 

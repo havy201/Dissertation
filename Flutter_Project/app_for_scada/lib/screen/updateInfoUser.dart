@@ -26,8 +26,8 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
   static const Color _buttonColor = Color(0xff00F3FF);
 
   final _formKey = GlobalKey<FormState>();
-  final _oldPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
+  final _oldValue = TextEditingController();
+  final _newValue = TextEditingController();
 
   bool _oldPasswordObscured = true;
   bool _newPasswordObscured = true;
@@ -42,31 +42,27 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
 
   @override
   void dispose() {
-    _oldPasswordController.dispose();
-    _newPasswordController.dispose();
+    _oldValue.dispose();
+    _newValue.dispose();
     super.dispose();
   }
 
-  void _checkValidator() {
+  void _checkValidator(String title) {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-    _showDialog();
+    _showDialog(title);
   }
 
-  void _showDialog() {
+  void _showDialog(String title) {
     showDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: Text('Thay đổi mật khẩu?', style: fontStyleBaloo(_fontSize)),
-        content: Text(
-          'Cập nhật mật khẩu tài khoản của bạn!',
-          style: fontStyleBaloo(_fontSize),
-        ),
+        title: Text('Cập nhật ${title}?', style: fontStyleBaloo(_fontSize)),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _handleUpdate();
+              _handleUpdate(title);
             },
             child: Text('Đồng ý', style: fontStyleBaloo(_fontSize)),
           ),
@@ -79,7 +75,7 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
     );
   }
 
-  Future<void> _handleUpdate() async {
+  Future<void> _handleUpdate(String title) async {
     setState(() => _isLoading = true);
 
     final overlay = Overlay.of(context, rootOverlay: true);
@@ -92,7 +88,7 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
     try {
       final controller = widget.notifyUser(
         context,
-        'Đang cập nhật mật khẩu...',
+        'Đang cập nhật ${title}...',
         fontStyleBaloo(_fontSize, color: Colors.white),
         _primaryBlue,
       );
@@ -108,7 +104,7 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
       if (Global.isLoggedIn) {
         final messageWidget = widget.notifyUser(
           context,
-          'Cập nhật mật khẩu thành công!',
+          'Cập nhật ${title} thành công!',
           fontStyleBaloo(_fontSize, color: Colors.white),
           Colors.green,
         );
@@ -130,8 +126,8 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
       blocker.remove();
       if (mounted) {
         _formKey.currentState?.reset();
-        _oldPasswordController.clear();
-        _newPasswordController.clear();
+        _oldValue.clear();
+        _newValue.clear();
         setState(() => _isLoading = false);
       }
     }
@@ -175,10 +171,11 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
 
   @override
   Widget build(BuildContext context) {
+    final String title = ModalRoute.of(context)!.settings.arguments as String;
     final spacing = Global.spacing;
     const framePadding = (_frameSize - _imageSize) / 2;
     return Scaffold(
-      appBar: TitleAppBar(title: 'Đổi mật khẩu'),
+      appBar: TitleAppBar(title: 'Cập nhật ${title}'),
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.all(spacing),
@@ -202,7 +199,7 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
               ),
               SizedBox(height: spacing),
               _passwordField(
-                controller: _oldPasswordController,
+                controller: _oldValue,
                 isObscured: _oldPasswordObscured,
                 onToggle: () => setState(
                   () => _oldPasswordObscured = !_oldPasswordObscured,
@@ -213,7 +210,7 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
               ),
               SizedBox(height: spacing),
               _passwordField(
-                controller: _newPasswordController,
+                controller: _newValue,
                 isObscured: _newPasswordObscured,
                 onToggle: () => setState(
                   () => _newPasswordObscured = !_newPasswordObscured,
@@ -225,8 +222,8 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
               SizedBox(height: spacing),
               const Spacer(),
               filledBtn(
-                _isLoading ? null : _checkValidator,
-                'Cập nhật mật khẩu',
+                _isLoading ? null : () => _checkValidator(title),
+                'Cập nhật ${title}',
                 color: _buttonColor,
               ),
               SizedBox(height: spacing),

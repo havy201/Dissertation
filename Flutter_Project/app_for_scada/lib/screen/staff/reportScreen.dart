@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import '../../widgets/topAppBar.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
-final double fontSize = 12;
-final double fontSizeNote = 10;
+final double fontSize = 12.0;
+final double titleFontSize = 16.0;
+final double gapContents = 5.0;
+final double gapTitle = 3.0;
 final double spacing = Global.spacing;
 
 class ReportScreen extends StatefulWidget {
@@ -25,21 +27,18 @@ class _ReportScreenState extends State<ReportScreen>
         padding: screenPadding(),
         child: GridView.count(
           clipBehavior: Clip.none, //ko bị cắt khi có shadow
-          childAspectRatio: 167 / 251, //
+          childAspectRatio: 167 / 220, //
           mainAxisSpacing: spacing,
           crossAxisSpacing: spacing,
           crossAxisCount: 2,
           children: [
-            informationCell(
-              context,
-              'lib/animals/cat.png',
-              'Thức ăn mèo',
-              2,
-              '203',
-              'Hạ Vy',
-              '29/10/2025',
-              'bột cá, bột đậu nành, cám gạo',
-            ),
+            informationCell(context, '203', "Đoàn Hạ Vy", "29/10/2025", [
+              "Thức ăn mèo",
+              "Nước uống",
+              "Đồ chơi",
+              "Vòng cổ",
+              "Giường ngủ",
+            ], 2),
           ],
         ),
       ),
@@ -48,13 +47,11 @@ class _ReportScreenState extends State<ReportScreen>
 
   GestureDetector informationCell(
     BuildContext context,
-    String imagePath,
-    String productName,
-    int status,
     String id,
     String customerName,
     String orderDate,
-    String ingredients,
+    List<String> productName,
+    int status,
   ) {
     return GestureDetector(
       onTap: () {
@@ -78,33 +75,45 @@ class _ReportScreenState extends State<ReportScreen>
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(child: Image.asset(imagePath, width: 80, height: 80)),
-              SizedBox(height: 2),
-              Center(child: Text(productName, style: fontStyleBaloo(20))),
-              Spacer(),
-              Align(alignment: Alignment.centerRight, child: statusTag(status)),
-              Spacer(),
-              Text('ID: $id', style: fontStyleInter(fontSize)),
-              Spacer(),
-              Text(
-                'Khách hàng: $customerName',
-                style: fontStyleInter(fontSize),
-                overflow: TextOverflow.ellipsis,
-              ),
-              Spacer(),
-              Text('Ngày đặt: $orderDate', style: fontStyleInter(fontSize)),
-              Spacer(),
-              Text(
-                'Thành phần: $ingredients',
-                softWrap: true,
-                overflow: TextOverflow.fade,
-                maxLines: 3,
-                style: fontStyleInter(
-                  fontSizeNote,
-                  isItalic: true,
-                  color: Colors.grey,
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color(0xFF032B91),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  'ID: $id',
+                  style: fontStyleBaloo(titleFontSize, color: Colors.white),
+                  textAlign: TextAlign.center,
                 ),
               ),
+              SizedBox(height: gapContents),
+              Text(
+                'Tên khách hàng:',
+                style: fontStyleInter(fontSize, isItalic: true),
+              ),
+              SizedBox(height: gapTitle),
+              Text(
+                customerName,
+                style: fontStyleInter(fontSize, isBold: true),
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: gapContents),
+              Text(
+                'Ngày đặt:',
+                style: fontStyleInter(fontSize, isItalic: true),
+              ),
+              SizedBox(height: gapTitle),
+              Text(orderDate, style: fontStyleInter(fontSize, isBold: true)),
+              SizedBox(height: gapContents),
+              Text(
+                'Các sản phẩm:',
+                style: fontStyleInter(fontSize, isItalic: true),
+              ),
+              SizedBox(height: gapTitle),
+              productListPreview(productName),
+              Spacer(),
+              Center(child: statusTag(status)),
             ],
           ),
         ),
@@ -112,11 +121,25 @@ class _ReportScreenState extends State<ReportScreen>
     );
   }
 
+  Widget productListPreview(List<String> productName) {
+    String fullText;
+    if (productName.length <= 3) {
+      fullText = productName.join('\n');
+    } else {
+      fullText = "${productName[0]}\n${productName[1]}\n${productName[2]}...";
+    }
+    return Text(
+      fullText,
+      style: fontStyleInter(fontSize, isBold: true),
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis, // Cắt bỏ phần dư thừa để mờ đúng vị trí
+    );
+  }
+
   Container statusTag(int status) {
     var tagInfo = statusTagText(status);
     return Container(
-      height: 19,
-      width: 75,
+      width: 100,
       decoration: BoxDecoration(
         color: tagInfo.$2,
         borderRadius: BorderRadius.circular(10),
@@ -124,11 +147,7 @@ class _ReportScreenState extends State<ReportScreen>
       child: Center(
         child: Text(
           tagInfo.$1,
-          style: fontStyleInter(
-            fontSizeNote,
-            isBold: true,
-            color: Colors.white,
-          ),
+          style: fontStyleInter(fontSize, isBold: true, color: Colors.white),
         ),
       ),
     );

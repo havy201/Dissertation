@@ -74,12 +74,15 @@ class _RecipeScreenState extends State<RecipeScreen>
         ),
       ),
       floatingActionButton: Global.currentUser.role == 2
-          ? floatingBtn(() {
-              Navigator.pushNamed(
-                context,
-                '/addRecipe',
-              ).then((_) => _refreshRecipes());
-            })
+          ? Padding(
+              padding: EdgeInsets.only(bottom: Global.spacing),
+              child: floatingBtn(() {
+                Navigator.pushNamed(
+                  context,
+                  '/addRecipe',
+                ).then((_) => _refreshRecipes());
+              }),
+            )
           : null,
     );
   }

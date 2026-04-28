@@ -15,6 +15,8 @@ class InfoUser extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final spacing = Global.spacing;
+    final padding = Global.padding;
+    final titleGap = Global.titleGap;
     final Account? user = Global.currentUser;
     final (String, String) role = roleOfUser(user?.role ?? 3);
 
@@ -26,14 +28,23 @@ class InfoUser extends StatelessWidget
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildAvatar(role.$2),
+            _buildAvatar(role.$2, user, titleGap),
             SizedBox(height: spacing),
-            _buildInfoList(spacing, user, role),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Color(0xffEDEDED),
+              ),
+              child: _buildInfoList(context, spacing, user, role),
+            ),
             const Spacer(),
             filledBtn(
-              () => Navigator.pushNamed(context, '/updateInfoUser'),
-              'Đổi mật khẩu',
-              color: const Color(0xff00F3FF),
+              () {
+                Navigator.pushNamed(context, '/loginScreen');
+              },
+              //them xoa thong tin tai khoan
+              'Đăng xuất',
+              color: Color(0xffFF0000),
             ),
           ],
         ),
@@ -41,55 +52,97 @@ class InfoUser extends StatelessWidget
     );
   }
 
-  Widget _buildAvatar(String imagePath) {
+  Widget _buildAvatar(String imagePath, Account? user, double titleGap) {
     const framePadding = (_frameSize - _imageSize) / 2;
     return Center(
-      child: Container(
-        padding: const EdgeInsets.all(framePadding),
-        width: _frameSize,
-        height: _frameSize,
-        decoration: containerDecoration(color: const Color(0xff032B91)),
-        child: Image.asset(imagePath, width: _imageSize, height: _imageSize),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(framePadding),
+            width: _frameSize,
+            height: _frameSize,
+            decoration: containerDecoration(color: const Color(0xff032B91)),
+            child: Image.asset(
+              imagePath,
+              width: _imageSize,
+              height: _imageSize,
+            ),
+          ),
+          SizedBox(height: titleGap),
+          Text(user?.username ?? 'N/A', style: fontStyleBaloo(_fontSize)),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoList(double spacing, Account? user, (String, String) role) {
+  Widget _buildInfoList(
+    BuildContext context,
+    double spacing,
+    Account? user,
+    (String, String) role,
+  ) {
     final infos = [
-      ('Loại tài khoản', role.$1),
-      ('Họ và tên', user?.fullname ?? 'N/A'),
-      ('Số điện thoại', user?.phone ?? 'N/A'),
-      ('Tên đăng nhập', user?.username ?? 'N/A'),
+      ('Họ và tên', user?.fullname ?? 'N/A', true),
+      ('Số điện thoại', user?.phone ?? 'N/A', true),
+      ('Loại tài khoản', role.$1, false),
+      ('Mật khẩu', 'Cập nhật mật khẩu', true),
     ];
 
     return Column(
       children: [
         for (var i = 0; i < infos.length; i++) ...[
-          _detailInfo(infos[i].$1, infos[i].$2),
-          if (i < infos.length - 1) SizedBox(height: spacing),
+          _detailInfo(context, infos[i].$1, infos[i].$2, infos[i].$3),
+          if (i < infos.length - 1) _divider(),
         ],
       ],
     );
   }
 
-  Widget _detailInfo(String title, String content) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            '$title:',
-            style: fontStyleBaloo(_fontSize),
-            textAlign: TextAlign.left,
+  Widget _divider() => Divider(color: Colors.white, height: 2);
+  Widget _detailInfo(
+    BuildContext context,
+    String title,
+    String content,
+    bool isEditable,
+  ) {
+    final padding = Global.padding;
+    final spacing = Global.spacing;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: padding, vertical: spacing / 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$title:',
+                style: fontStyleInter(
+                  _fontSize,
+                  color: Colors.black,
+                  isBold: true,
+                ),
+              ),
+              Text(content, style: fontStyleBaloo(_fontSize)),
+            ],
           ),
-        ),
-        Expanded(
-          child: Text(
-            content,
-            style: fontStyleBaloo(_fontSize, color: Colors.black),
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ],
+          const Spacer(),
+          if (isEditable)
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/updateInfoUser',
+                  arguments: title.toLowerCase(),
+                ).then((_) {});
+              },
+              icon: const Icon(Icons.edit, color: Color(0xff032B91)),
+            ),
+        ],
+      ),
     );
   }
 

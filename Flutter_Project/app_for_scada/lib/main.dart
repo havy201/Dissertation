@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
         '/orderScreen': (context) => OrderScreen(),
         '/checkScreen': (context) => CheckScreen(),
       },
-      home: TrendScreen(),
+      home: MainShell(),
       // Scaffold(
       //   appBar: AppBar(title: Text('WebSocket Demo')),
       //   body: WebSocketDemo(),
