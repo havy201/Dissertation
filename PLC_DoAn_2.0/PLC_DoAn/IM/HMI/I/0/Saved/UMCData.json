@@ -1,0 +1,87 @@
+{
+  "version": "1",
+  "users": [
+    {
+      "name": "Admin",
+      "password": {
+        "hash": "ly59yGV/MJUju2bNvdXTdbq/yk0FKS8MIv6NmvkyAIFsyz+OJQY1IPxPTxzx8QYFxwxHV1u94EU++K5JTJNdBA==",
+        "salt": "EmHVL3X+Y57YnkpUK3sPr0cMyGfM37n9h2yV3hbIHiQ=",
+        "algorithm": "PBKDF2-HMAC-SHA1",
+        "encoding": "utf16le",
+        "iteration": 10000
+      },
+      "fullname": "Admin",
+      "comment": "",
+      "alertbeforepasswordexpirationdays": 0,
+      "passwordexpirationdays": 0,
+      "autologoff": 30
+    },
+    {
+      "name": "Operator",
+      "password": {
+        "hash": "6y3+n5iP1be9KoSk7IKQrzz+HPqy3ZN/zWKrcCoP5j4bw8CjrtYpIHjiEXNWjYrfKW0LsICq9mCBlt2D7s7qzA==",
+        "salt": "puoba1kiix9VhG5MJttQL2qOvnsKxBwsfLcVGLVravg=",
+        "algorithm": "PBKDF2-HMAC-SHA1",
+        "encoding": "utf16le",
+        "iteration": 10000
+      },
+      "fullname": "Operator",
+      "comment": "",
+      "alertbeforepasswordexpirationdays": 0,
+      "passwordexpirationdays": 0,
+      "autologoff": 30
+    }
+  ],
+  "groups": [
+    {
+      "name": "HMI Administrator",
+      "roles": [
+        "HMI Administrator"
+      ],
+      "users": [
+        "Admin"
+      ]
+    },
+    {
+      "name": "HMI Operator",
+      "users": [
+        "Admin",
+        "Operator"
+      ]
+    },
+    {
+      "name": "HMI Monitor",
+      "users": [
+        "Admin",
+        "Operator"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "name": "HMI Administrator",
+      "rights": [
+        "UM_ADMIN"
+      ]
+    }
+  ],
+  "globalAccountPolicies": {
+    "enablePasswordHistoryByDays": 0,
+    "enablePasswordHistoryByNumber": 1,
+    "enablePasswordCheck": 1,
+    "numberOfPasswordBeforeReuse": 5,
+    "passwordAging": 0,
+    "passwordMaxLength": 120,
+    "passwordMinAlphaChar": 0,
+    "passwordMinLength": 8,
+    "passwordMinLowerChar": 1,
+    "passwordMinUpperChar": 1,
+    "passwordMinNumericChar": 1,
+    "passwordMinOtherChar": 0
+  },
+  "umcConfig": {
+    "local": {
+      "domainName": "UM_Domain"
+    }
+  }
+}
