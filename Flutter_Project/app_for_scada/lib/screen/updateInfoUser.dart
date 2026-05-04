@@ -1,10 +1,44 @@
+import 'package:app_for_scada/api/LoginAPIServer.dart';
+import 'package:app_for_scada/model/Login/Account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../widgets/titleAppBar.dart';
 import '../global.dart';
 import '../mixin/mixinDecorations.dart';
 import '../mixin/mixinFunctions.dart';
 import '../mixin/mixinWidgetWithFunction.dart';
+
+// ✅ Model config cho từng loại update
+class _UpdateConfig {
+  final String title;
+  final String icon;
+  final int maxLength;
+  final String oldLabel;
+  final String oldHint;
+  final String oldJsonField;
+  final String newLabel;
+  final String newHint;
+  final String newJsonField;
+  final int type; // 0: fullName, 1: phoneNumber, 2: password
+  final TextInputType keyboardType;
+  final List<TextInputFormatter> inputFormatters;
+
+  const _UpdateConfig({
+    required this.title,
+    required this.icon,
+    required this.maxLength,
+    required this.oldLabel,
+    required this.oldHint,
+    required this.oldJsonField,
+    required this.newLabel,
+    required this.newHint,
+    required this.newJsonField,
+    required this.type,
+    this.keyboardType = TextInputType.text,
+    this.inputFormatters = const [],
+  });
+}
 
 class UpdateInfoUser extends StatefulWidget with mixinNotification {
   const UpdateInfoUser({super.key});
@@ -22,18 +56,59 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
   static const double _frameSize = 120.0;
   static const double _imageSize = 100.0;
   static const double _fontSize = 20.0;
-  static final Color _primaryBlue = Global.primaryBlue;
   static const Color _buttonColor = Color(0xff00F3FF);
 
-  final _formKey = GlobalKey<FormState>();
-  final _oldValue = TextEditingController();
-  final _newValue = TextEditingController();
+  // ✅ Tất cả config tập trung 1 chỗ — dễ thêm/sửa sau này
+  static Map<int, _UpdateConfig> _configs = {
+    0: _UpdateConfig(
+      title: 'họ và tên',
+      icon: 'lib/icons/loginUser.png',
+      maxLength: 50,
+      oldLabel: '',
+      oldHint: '',
+      oldJsonField: '',
+      newLabel: 'Họ và tên mới',
+      newHint: 'Ví dụ: Nguyen Van B',
+      newJsonField: 'fullName',
+      type: 0,
+    ),
+    1: _UpdateConfig(
+      title: 'số điện thoại',
+      icon: 'lib/icons/phonenumber.png',
+      maxLength: 10,
+      oldLabel: '',
+      oldHint: '',
+      oldJsonField: '',
+      newLabel: 'Số điện thoại mới',
+      newHint: 'Ví dụ: 0123456789',
+      newJsonField: 'phoneNumber',
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      type: 1,
+    ),
+    2: _UpdateConfig(
+      title: 'mật khẩu',
+      icon: 'lib/icons/loginPassword.png',
+      maxLength: 20,
+      oldLabel: 'oldPassword',
+      oldHint: 'Ví dụ: nguyen@123',
+      oldJsonField: 'oldPassword',
+      newLabel: 'Mật khẩu mới',
+      newHint: 'Ví dụ: nguyen@456',
+      newJsonField: 'newPassword',
+      type: 2,
+    ),
+  };
 
-  bool _oldPasswordObscured = true;
-  bool _newPasswordObscured = true;
+  final _formKey = GlobalKey<FormState>();
+  final _oldController = TextEditingController();
+  final _newController = TextEditingController();
+
+  bool _oldObscured = true;
+  bool _newObscured = true;
   bool _isLoading = false;
 
-  String get _avatarPath => switch (Global.currentUser.role) {
+  String get _avatarPath => switch (Global.currentUser?.role) {
     0 => 'lib/icons/ava_customer.png',
     1 => 'lib/icons/ava_staff.png',
     2 => 'lib/icons/ava_manager.png',
@@ -42,27 +117,30 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
 
   @override
   void dispose() {
-    _oldValue.dispose();
-    _newValue.dispose();
+    _oldController.dispose();
+    _newController.dispose();
     super.dispose();
   }
 
-  void _checkValidator(String title) {
+  void _checkValidator(_UpdateConfig config) {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-    _showDialog(title);
+    _showDialog(config);
   }
 
-  void _showDialog(String title) {
+  void _showDialog(_UpdateConfig config) {
     showDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: Text('Cập nhật ${title}?', style: fontStyleBaloo(_fontSize)),
+        title: Text(
+          'Cập nhật ${config.title}?',
+          style: fontStyleBaloo(_fontSize),
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              _handleUpdate(title);
+              _handleUpdate(config);
             },
             child: Text('Đồng ý', style: fontStyleBaloo(_fontSize)),
           ),
@@ -75,9 +153,9 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
     );
   }
 
-  Future<void> _handleUpdate(String title) async {
+  Future<void> _handleUpdate(_UpdateConfig config) async {
     setState(() => _isLoading = true);
-
+    final primaryBlue = Global.primaryBlue;
     final overlay = Overlay.of(context, rootOverlay: true);
     final blocker = OverlayEntry(
       builder: (_) =>
@@ -86,34 +164,45 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
     overlay.insert(blocker);
 
     try {
-      final controller = widget.notifyUser(
+      final messageWidget = widget.notifyUser(
         context,
-        'Đang cập nhật ${title}...',
+        'Đang cập nhật ${config.title}...',
         fontStyleBaloo(_fontSize, color: Colors.white),
-        _primaryBlue,
+        primaryBlue,
       );
-
-      await controller.closed;
+      await messageWidget.closed;
+      if (!mounted) return;
+      final info = Account(
+        userName: Global.currentUser!.userName,
+        fullName: config.type == 0 ? _newController.text.trim() : null,
+        phoneNumber: config.type == 1 ? _newController.text.trim() : null,
+        oldPassword: config.type == 2 ? _oldController.text : null,
+        newPassword: config.type == 2 ? _newController.text : null,
+      );
+      bool isUpdated = await LoginAPIServer.instance.updateUser(info);
       if (!mounted) return;
 
-      // TODO: Gọi API thực
-      // await ApiService.updatePassword(
-      //   oldPassword: _oldPasswordController.text,
-      //   newPassword: _newPasswordController.text,
-      // );
-      if (Global.isLoggedIn) {
-        final messageWidget = widget.notifyUser(
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      if (isUpdated) {
+        final success = widget.notifyUser(
           context,
-          'Cập nhật ${title} thành công!',
+          'Cập nhật ${config.title} thành công!',
           fontStyleBaloo(_fontSize, color: Colors.white),
           Colors.green,
         );
-        await messageWidget.closed;
+        if (config.type == 0) {
+          Global.currentUser!.fullName = _newController.text.trim();
+        }
+        // Nếu là Cập nhật Số điện thoại (type == 1)
+        else if (config.type == 1) {
+          Global.currentUser!.phoneNumber = _newController.text.trim();
+        }
+        await success.closed;
         if (!mounted) return;
+        Navigator.pop(context, true); // Trả về true để trigger set
       } else {
         throw Exception('Cập nhật thất bại');
       }
-      Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       widget.notifyUser(
@@ -126,56 +215,65 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
       blocker.remove();
       if (mounted) {
         _formKey.currentState?.reset();
-        _oldValue.clear();
-        _newValue.clear();
+        _oldController.clear();
+        _newController.clear();
         setState(() => _isLoading = false);
       }
     }
   }
 
-  // ✅ Tách widget password — thêm enabled
-  Widget _passwordField({
+  Widget _valueField({
     required TextEditingController controller,
-    required bool isObscured,
-    required VoidCallback onToggle,
+    bool isObscured = false,
+    VoidCallback? onToggle,
+    required int maxLength,
+    required String path,
     required String label,
     required String hint,
     required String validationMessage,
-    String? Function(String?)? extraValidator,
+    TextInputType keyboardType = TextInputType.number,
+    List<TextInputFormatter> inputFormatters = const [],
   }) {
+    final primaryBlue = Global.primaryBlue;
     return TextFormField(
       controller: controller,
       enabled: !_isLoading,
       obscureText: isObscured,
-      maxLength: 20,
+      maxLength: maxLength,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         counterText: '',
-        prefixIcon: prefixIconPadding('lib/icons/loginPassword.png'),
-        suffixIcon: suffixIconPadding(isObscured, onToggle),
+        prefixIcon: prefixIconPadding(path),
+        suffixIcon: onToggle != null
+            ? suffixIconPadding(isObscured, onToggle)
+            : null,
         labelText: label,
-        labelStyle: fontStyleInter(_fontSize, color: _primaryBlue),
+        labelStyle: fontStyleInter(_fontSize, color: primaryBlue),
         contentPadding: contentPadding(),
         hintText: hint,
         hintStyle: fontStyleInter(
           _fontSize,
           isItalic: true,
-          color: _primaryBlue,
+          color: primaryBlue,
         ),
         border: outlineInputBorder(),
         enabledBorder: outlineInputBorder(),
         focusedBorder: outlineInputBorder(),
       ),
-      validator: extraValidator ?? mesIFieldValidator(validationMessage),
+      validator: mesIFieldValidator(validationMessage),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final String title = ModalRoute.of(context)!.settings.arguments as String;
+    final type = ModalRoute.of(context)!.settings.arguments as int;
+    final config = _configs[type] ?? _configs[0]!; // ✅ fallback an toàn
     final spacing = Global.spacing;
     const framePadding = (_frameSize - _imageSize) / 2;
+
     return Scaffold(
-      appBar: TitleAppBar(title: 'Cập nhật ${title}'),
+      appBar: TitleAppBar(title: 'Cập nhật ${config.title}'),
       backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.all(spacing),
@@ -184,12 +282,13 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // ── Avatar ────────────────────────────
               Center(
                 child: Container(
                   padding: const EdgeInsets.all(framePadding),
                   width: _frameSize,
                   height: _frameSize,
-                  decoration: containerDecoration(color: _primaryBlue),
+                  decoration: containerDecoration(color: Global.primaryBlue),
                   child: Image.asset(
                     _avatarPath,
                     width: _imageSize,
@@ -198,39 +297,51 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
                 ),
               ),
               SizedBox(height: spacing),
-              _passwordField(
-                controller: _oldValue,
-                isObscured: _oldPasswordObscured,
-                onToggle: () => setState(
-                  () => _oldPasswordObscured = !_oldPasswordObscured,
+
+              if (config.type != 2) ...[
+                // ✅ Case không phải password — chỉ 1 field
+                _valueField(
+                  controller: _newController,
+                  maxLength: config.maxLength,
+                  path: config.icon,
+                  label: config.newLabel,
+                  hint: config.newHint,
+                  validationMessage: 'Vui lòng nhập ${config.title}',
+                  keyboardType: config.keyboardType,
+                  inputFormatters: config.inputFormatters,
                 ),
-                label: 'Mật khẩu cũ',
-                hint: 'Ví dụ: nguyen@123',
-                validationMessage: 'Vui lòng nhập mật khẩu cũ',
-              ),
-              SizedBox(height: spacing),
-              _passwordField(
-                controller: _newValue,
-                isObscured: _newPasswordObscured,
-                onToggle: () => setState(
-                  () => _newPasswordObscured = !_newPasswordObscured,
+              ] else ...[
+                // ✅ Case password — 2 field + obscure
+                _valueField(
+                  controller: _oldController,
+                  maxLength: config.maxLength,
+                  isObscured: _oldObscured,
+                  onToggle: () => setState(() => _oldObscured = !_oldObscured),
+                  path: config.icon,
+                  label: config.oldLabel,
+                  hint: config.oldHint,
+                  validationMessage:
+                      'Vui lòng nhập ${config.oldLabel.toLowerCase()}',
                 ),
-                label: 'Mật khẩu mới',
-                hint: 'Ví dụ: nguyen@456',
-                validationMessage: 'Vui lòng nhập mật khẩu mới',
-              ),
-              SizedBox(height: spacing),
+                SizedBox(height: spacing),
+                _valueField(
+                  controller: _newController,
+                  maxLength: config.maxLength,
+                  isObscured: _newObscured,
+                  onToggle: () => setState(() => _newObscured = !_newObscured),
+                  path: config.icon,
+                  label: config.newLabel,
+                  hint: config.newHint,
+                  validationMessage:
+                      'Vui lòng nhập ${config.newLabel.toLowerCase()}',
+                ),
+              ],
+
               const Spacer(),
               filledBtn(
-                _isLoading ? null : () => _checkValidator(title),
-                'Cập nhật ${title}',
+                _isLoading ? null : () => _checkValidator(config),
+                'Cập nhật ${config.title}',
                 color: _buttonColor,
-              ),
-              SizedBox(height: spacing),
-              filledBtn(
-                _isLoading ? null : () => Navigator.pop(context),
-                'Hủy',
-                color: const Color(0xffB9B9B9),
               ),
             ],
           ),

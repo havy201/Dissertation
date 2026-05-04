@@ -40,7 +40,6 @@ class HomeScreen extends StatelessWidget
     return Scaffold(
       appBar: const TopAppBar(title: 'BatchFeed'),
       backgroundColor: Colors.white,
-      // ✅ Không có bottomNavigationBar — đã có trong MainShell
       body: SingleChildScrollView(
         padding: screenPadding(),
         child: Column(

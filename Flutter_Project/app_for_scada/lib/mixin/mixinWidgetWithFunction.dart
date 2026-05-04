@@ -13,11 +13,15 @@ mixin mixinNotification on StatefulWidget {
     final double _bottomWidth = Global.bottomWidth;
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        margin: EdgeInsets.only(bottom: _spacing + _bottomWidth, left: _spacing, right: _spacing),
-        duration: const Duration(milliseconds: 3000),
+        margin: EdgeInsets.only(
+          bottom: _spacing + _bottomWidth,
+          left: _spacing,
+          right: _spacing,
+        ),
+        duration: const Duration(milliseconds: 5000),
         content: AnimatedTextKit(
           animatedTexts: [
-            WavyAnimatedText(
+            TypewriterAnimatedText(
               text,
               textStyle: textStyle,
               speed: const Duration(milliseconds: 100),

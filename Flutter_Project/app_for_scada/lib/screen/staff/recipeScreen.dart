@@ -73,7 +73,7 @@ class _RecipeScreenState extends State<RecipeScreen>
           ),
         ),
       ),
-      floatingActionButton: Global.currentUser.role == 2
+      floatingActionButton: Global.currentUser?.role == 2
           ? Padding(
               padding: EdgeInsets.only(bottom: Global.spacing),
               child: floatingBtn(() {

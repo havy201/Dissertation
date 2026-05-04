@@ -32,7 +32,7 @@ class _MainShellState extends State<MainShell> {
   ];
 
   List<Widget> get _screens =>
-      Global.currentUser.role == 0 ? _customerScreens : _staffScreens;
+      Global.currentUser?.role == 0 ? _customerScreens : _staffScreens;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _MainShellState extends State<MainShell> {
 
   Widget _buildBottomNav() {
     final isStaff =
-        Global.currentUser.role == 1 || Global.currentUser.role == 2;
+        Global.currentUser?.role == 1 || Global.currentUser?.role == 2;
 
     return Container(
       height: Global.bottomWidth,

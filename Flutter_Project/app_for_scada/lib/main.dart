@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'screen/start/splash.dart';
 import 'screen/loginScreen.dart';
 import 'screen/registerScreen.dart';
 import 'screen/infoUser.dart';
@@ -30,10 +32,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'BatchFeed',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
       routes: {
         '/loginScreen': (context) => LoginScreen(),
@@ -55,7 +58,7 @@ class MyApp extends StatelessWidget {
         '/orderScreen': (context) => OrderScreen(),
         '/checkScreen': (context) => CheckScreen(),
       },
-      home: MainShell(),
+      home: Splash(),
       // Scaffold(
       //   appBar: AppBar(title: Text('WebSocket Demo')),
       //   body: WebSocketDemo(),

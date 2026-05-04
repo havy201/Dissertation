@@ -3,7 +3,8 @@ import '../global.dart';
 import '../widgets/titleAppBar.dart';
 import '../mixin/mixinDecorations.dart';
 
-class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixin {
+class HelpScreen extends StatelessWidget
+    with itemDecorationMixin, fontStyleMixin {
   const HelpScreen({super.key});
 
   static const double _lineSpacing = 10.0;
@@ -15,8 +16,7 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
     final spacing = Global.spacing;
     final padding = Global.padding;
     final titleGap = Global.titleGap;
-    final role = Global.currentUser.role;
-
+    final role = Global.currentUser?.role ?? 0; // Mặc định là khách hàng nếu chưa đăng nhập
     final sections = role == 0
         ? _buildCustomerSections(titleGap)
         : _buildStaffSections(titleGap, canAddRecipe: role == 2);
@@ -29,7 +29,12 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
           padding: EdgeInsets.all(spacing),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildSectionWidgets(sections, spacing, padding, titleGap),
+            children: _buildSectionWidgets(
+              sections,
+              spacing,
+              padding,
+              titleGap,
+            ),
           ),
         ),
       ),
@@ -102,10 +107,12 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
             TextSpan(
               style: fontStyleInter(_fontSize),
               children: parts
-                  .map((part) => TextSpan(
-                        text: part.text,
-                        style: fontStyleInter(_fontSize, isBold: part.isBold),
-                      ))
+                  .map(
+                    (part) => TextSpan(
+                      text: part.text,
+                      style: fontStyleInter(_fontSize, isBold: part.isBold),
+                    ),
+                  )
                   .toList(),
             ),
             textAlign: TextAlign.justify,
@@ -151,14 +158,18 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
             TextPart('. '),
           ]),
           GuideItem('lib/icons/report_light.png', [
-            TextPart('Sẽ có các đơn hàng mà khách đã đặt, và các thông tin chung của đơn hàng. '),
+            TextPart(
+              'Sẽ có các đơn hàng mà khách đã đặt, và các thông tin chung của đơn hàng. ',
+            ),
             TextPart('Nhấn vào đơn hàng', isBold: true),
             TextPart(' để xem chi tiết đơn hàng.'),
           ]),
           GuideItem('lib/icons/warning.png', [
             TextPart('Quý khách có thể hủy đơn hàng nếu '),
             TextPart('sản phẩm chưa được xử lý', isBold: true),
-            TextPart('. Khi đơn hàng đã được xử lý, quý khách sẽ không thể hủy đơn hàng.'),
+            TextPart(
+              '. Khi đơn hàng đã được xử lý, quý khách sẽ không thể hủy đơn hàng.',
+            ),
           ]),
         ],
       ),
@@ -183,7 +194,10 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
     ];
   }
 
-  List<GuideSection> _buildStaffSections(double titleGap, {required bool canAddRecipe}) {
+  List<GuideSection> _buildStaffSections(
+    double titleGap, {
+    required bool canAddRecipe,
+  }) {
     return [
       GuideSection(
         title: 'Hướng dẫn kiểm tra trạng thái sản xuất',
@@ -193,35 +207,47 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
             TextPart('Trang chủ', isBold: true),
             TextPart(' để kiểm tra trạng thái sản xuất. '),
           ], gapAfter: titleGap),
-          GuideItem('lib/icons/bullet.png', [
-            TextPart('Gồm 2 chế độ hoạt động: '),
-            TextPart('Auto (tự động)', isBold: true),
-            TextPart(' và '),
-            TextPart('Manu (thủ công)', isBold: true),
-            TextPart('.'),
-          ], size: _bulletSize, gapAfter: titleGap),
-          GuideItem('lib/icons/bullet.png', [
-            TextPart('Gồm 8 trạng thái hoạt động: '),
-            TextPart('Idle (khởi tạo hệ thống)', isBold: true),
-            TextPart(', '),
-            TextPart('Run (đang hoạt động)', isBold: true),
-            TextPart(', '),
-            TextPart('Abort (hủy bỏ)', isBold: true),
-            TextPart(', '),
-            TextPart('Stop (dừng)', isBold: true),
-            TextPart(', '),
-            TextPart('Pause (tạm nghỉ)', isBold: true),
-            TextPart(', '),
-            TextPart('Hold (giữ)', isBold: true),
-            TextPart(', '),
-            TextPart('Restart (khởi động lại)', isBold: true),
-            TextPart(', '),
-            TextPart('Complete (hoàn thành)', isBold: true),
-            TextPart('.'),
-          ], size: _bulletSize, gapAfter: titleGap),
+          GuideItem(
+            'lib/icons/bullet.png',
+            [
+              TextPart('Gồm 2 chế độ hoạt động: '),
+              TextPart('Auto (tự động)', isBold: true),
+              TextPart(' và '),
+              TextPart('Manu (thủ công)', isBold: true),
+              TextPart('.'),
+            ],
+            size: _bulletSize,
+            gapAfter: titleGap,
+          ),
+          GuideItem(
+            'lib/icons/bullet.png',
+            [
+              TextPart('Gồm 8 trạng thái hoạt động: '),
+              TextPart('Idle (khởi tạo hệ thống)', isBold: true),
+              TextPart(', '),
+              TextPart('Run (đang hoạt động)', isBold: true),
+              TextPart(', '),
+              TextPart('Abort (hủy bỏ)', isBold: true),
+              TextPart(', '),
+              TextPart('Stop (dừng)', isBold: true),
+              TextPart(', '),
+              TextPart('Pause (tạm nghỉ)', isBold: true),
+              TextPart(', '),
+              TextPart('Hold (giữ)', isBold: true),
+              TextPart(', '),
+              TextPart('Restart (khởi động lại)', isBold: true),
+              TextPart(', '),
+              TextPart('Complete (hoàn thành)', isBold: true),
+              TextPart('.'),
+            ],
+            size: _bulletSize,
+            gapAfter: titleGap,
+          ),
           GuideItem('lib/icons/bullet.png', [
             TextPart('Công đoạn', isBold: true),
-            TextPart(' tương ứng với các bước đang được thực hiện trên hệ thống.'),
+            TextPart(
+              ' tương ứng với các bước đang được thực hiện trên hệ thống.',
+            ),
           ], size: _bulletSize),
         ],
       ),
@@ -238,7 +264,9 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
           ]),
           if (canAddRecipe)
             GuideItem('lib/icons/plus.png', [
-              TextPart('Nhân viên có thể thêm công thức mới bằng cách nhấn nút '),
+              TextPart(
+                'Nhân viên có thể thêm công thức mới bằng cách nhấn nút ',
+              ),
               TextPart('Thêm công thức', isBold: true),
               TextPart('.'),
             ]),
@@ -253,7 +281,9 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
             TextPart('. '),
           ]),
           GuideItem('lib/icons/trend_light.png', [
-            TextPart('Nhân viên kiểm tra thông tin về quá trình cân 5 loại nguyên liệu tại đây.'),
+            TextPart(
+              'Nhân viên kiểm tra thông tin về quá trình cân 5 loại nguyên liệu tại đây.',
+            ),
           ]),
         ],
       ),
@@ -266,7 +296,9 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
             TextPart('. '),
           ]),
           GuideItem('lib/icons/alarm_light.png', [
-            TextPart('Nhân viên kiểm tra các cảnh báo hệ thống tại đây. Bao gồm: '),
+            TextPart(
+              'Nhân viên kiểm tra các cảnh báo hệ thống tại đây. Bao gồm: ',
+            ),
           ]),
           GuideItem('lib/icons/bullet.png', [
             TextPart('Thời gian xảy ra lỗi.'),
@@ -293,7 +325,9 @@ class HelpScreen extends StatelessWidget with itemDecorationMixin, fontStyleMixi
             TextPart('. '),
           ]),
           GuideItem('lib/icons/report_light.png', [
-            TextPart('Sẽ có các đơn hàng mà khách hàng đã đặt, và các thông tin chung của đơn hàng. '),
+            TextPart(
+              'Sẽ có các đơn hàng mà khách hàng đã đặt, và các thông tin chung của đơn hàng. ',
+            ),
             TextPart('Nhấn vào đơn hàng', isBold: true),
             TextPart(' để xem chi tiết đơn hàng.'),
           ]),

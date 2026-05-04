@@ -52,7 +52,6 @@ class _OrderScreenState extends State<OrderScreen>
         AutomaticKeepAliveClientMixin {
   static const double _fontSize = 20;
   static const double _slidableExtentRatio = 0.22;
-  static const Color _buttonColor = Color(0xff00F3FF);
 
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;

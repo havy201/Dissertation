@@ -27,7 +27,7 @@ mixin InputFieldDecorationMixin {
     );
   }
 
-  Padding suffixIconPadding(bool obscurePassword, Function() toggleObscure) {
+  Padding suffixIconPadding(bool obscurePassword, Function()? toggleObscure) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       child: GestureDetector(
@@ -117,7 +117,13 @@ mixin itemDecorationMixin {
 
   EdgeInsets screenPadding() {
     final spacing = Global.spacing;
-    return EdgeInsets.all(spacing);
+    final bottomWidth = Global.bottomWidth;
+    return EdgeInsets.fromLTRB(
+      spacing,
+      spacing,
+      spacing,
+      bottomWidth + spacing,
+    );
   }
 }
 mixin fontStyleMixin {

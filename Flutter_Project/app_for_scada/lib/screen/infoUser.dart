@@ -1,21 +1,25 @@
-import 'package:app_for_scada/model/Account.dart';
+import 'package:app_for_scada/model/Login/Account.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../widgets/titleAppBar.dart';
 import '../global.dart';
 import '../mixin/mixinDecorations.dart';
 
-class InfoUser extends StatelessWidget
-    with itemDecorationMixin, fontStyleMixin {
+class InfoUser extends StatefulWidget {
   const InfoUser({super.key});
 
+  @override
+  State<InfoUser> createState() => _InfoUserState();
+}
+
+class _InfoUserState extends State<InfoUser>
+    with itemDecorationMixin, fontStyleMixin {
   static const double _frameSize = 120.0;
   static const double _imageSize = 100.0;
   static const double _fontSize = 20.0;
-
   @override
   Widget build(BuildContext context) {
     final spacing = Global.spacing;
-    final padding = Global.padding;
     final titleGap = Global.titleGap;
     final Account? user = Global.currentUser;
     final (String, String) role = roleOfUser(user?.role ?? 3);
@@ -40,9 +44,9 @@ class InfoUser extends StatelessWidget
             const Spacer(),
             filledBtn(
               () {
-                Navigator.pushNamed(context, '/loginScreen');
+                Global.currentUser = null;
+                Get.offAllNamed('/loginScreen');
               },
-              //them xoa thong tin tai khoan
               'Đăng xuất',
               color: Color(0xffFF0000),
             ),
@@ -71,7 +75,7 @@ class InfoUser extends StatelessWidget
             ),
           ),
           SizedBox(height: titleGap),
-          Text(user?.username ?? 'N/A', style: fontStyleBaloo(_fontSize)),
+          Text(user?.userName ?? 'N/A', style: fontStyleBaloo(_fontSize)),
         ],
       ),
     );
@@ -84,10 +88,10 @@ class InfoUser extends StatelessWidget
     (String, String) role,
   ) {
     final infos = [
-      ('Họ và tên', user?.fullname ?? 'N/A', true),
-      ('Số điện thoại', user?.phone ?? 'N/A', true),
-      ('Loại tài khoản', role.$1, false),
-      ('Mật khẩu', 'Cập nhật mật khẩu', true),
+      ('Họ và tên', user?.fullName ?? 'N/A', 0),
+      ('Số điện thoại', user?.phoneNumber ?? 'N/A', 1),
+      ('Loại tài khoản', role.$1, 3),
+      ('Mật khẩu', 'Cập nhật mật khẩu', 2),
     ];
 
     return Column(
@@ -105,7 +109,7 @@ class InfoUser extends StatelessWidget
     BuildContext context,
     String title,
     String content,
-    bool isEditable,
+    int isEditable,
   ) {
     final padding = Global.padding;
     final spacing = Global.spacing;
@@ -130,14 +134,18 @@ class InfoUser extends StatelessWidget
             ],
           ),
           const Spacer(),
-          if (isEditable)
+          if (isEditable == 0 || isEditable == 1 || isEditable == 2)
             IconButton(
               onPressed: () {
                 Navigator.pushNamed(
                   context,
                   '/updateInfoUser',
-                  arguments: title.toLowerCase(),
-                ).then((_) {});
+                  arguments: isEditable,
+                ).then((result) {
+                  if (result == true) {
+                    setState(() {});
+                  }
+                });
               },
               icon: const Icon(Icons.edit, color: Color(0xff032B91)),
             ),

@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:app_for_scada/mixin/mixinFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +5,8 @@ import '../widgets/titleAppBar.dart';
 import '../global.dart';
 import '../mixin/mixinDecorations.dart';
 import '../mixin/mixinWidgetWithFunction.dart';
+import 'package:app_for_scada/api/LoginAPIServer.dart';
+import 'package:app_for_scada/model/Login/Account.dart';
 
 class RegisterScreen extends StatefulWidget with mixinNotification {
   const RegisterScreen({super.key});
@@ -35,8 +36,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool _isShowPINField = false;
   bool _isLoading = false;
   int? _selectedRole; // ✅ Lưu role đã chọn
-  bool _isRegister = true;
-  // ✅ Biến trạng thái đăng nhập => de test giao diện, sau này sẽ dựa vào API
   @override
   void dispose() {
     _fullnameController.dispose();
@@ -67,17 +66,21 @@ class _RegisterScreenState extends State<RegisterScreen>
       );
       await messageWidget.closed;
       if (!mounted) return;
-      // TODO: Gọi API thực
-      // await ApiService.register(
-      //   fullname: _fullnameController.text,
-      //   phone: _phoneController.text,
-      //   username: _usernameController.text,
-      //   password: _passwordController.text,
-      //   role: _selectedRole!,
-      //   pin: _isShowPINField ? _pinController.text : null,
-      // );
-      // Navigator.pushReplacementNamed(context, '/loginScreen');
-      if (_isRegister) {
+      final user = Account(
+        userName: _usernameController.text.trim(),
+        password: _passwordController.text,
+        fullName: _fullnameController.text.trim(),
+        phoneNumber: _phoneController.text.trim(),
+        role: _selectedRole!,
+        staffCode: _isShowPINField
+            ? int.tryParse(_pinController.text.trim())
+            : 0,
+      );
+      bool isCreated = await LoginAPIServer.instance.createAccount(user);
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      if (isCreated) {
         final messageWidget = widget.notifyUser(
           context,
           'Đăng ký thành công!',
@@ -85,19 +88,22 @@ class _RegisterScreenState extends State<RegisterScreen>
           Colors.green[900]!,
         );
         await messageWidget.closed;
-        //  Navigator.pushReplacementNamed(context, '/loginScreen');
-        Navigator.pop(context); //
+        Navigator.pop(context);
       } else {
         throw Exception('Đăng ký thất bại');
       }
     } catch (e) {
       if (!mounted) return;
-      widget.notifyUser(
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      final messageWidget = widget.notifyUser(
         context,
         'Đăng ký thất bại!',
         fontStyleBaloo(_fontSize, color: Colors.white),
         Colors.red[900]!,
       );
+      await messageWidget.closed;
+      if (!mounted) return;
+      print('Lỗi gì đây: $e');
     } finally {
       blocker.remove();
       if (mounted) {
