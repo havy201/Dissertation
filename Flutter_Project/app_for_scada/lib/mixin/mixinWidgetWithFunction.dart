@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import '../global.dart';
@@ -34,6 +35,37 @@ mixin mixinNotification on StatefulWidget {
         behavior: SnackBarBehavior.floating,
         backgroundColor: color,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+}
+
+mixin mixinWidgetWithFunction<T extends StatefulWidget> on State<T> {
+  Future<void> showConfirmDialog({
+    required String title,
+    required VoidCallback onConfirm,
+    TextStyle? titleStyle,
+    TextStyle? actionStyle,
+    String confirmText = 'Đồng ý',
+    String cancelText = 'Hủy',
+  }) {
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) => CupertinoAlertDialog(
+        title: Text(title, style: titleStyle),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              onConfirm();
+            },
+            child: Text(confirmText, style: actionStyle),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(cancelText, style: actionStyle),
+          ),
+        ],
       ),
     );
   }

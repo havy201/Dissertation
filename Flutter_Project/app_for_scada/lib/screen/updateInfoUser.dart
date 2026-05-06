@@ -52,6 +52,7 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
         itemDecorationMixin,
         fontStyleMixin,
         InputFieldDecorationMixin,
+        mixinWidgetWithFunction,
         particularFunctionMixin {
   static const double _frameSize = 120.0;
   static const double _imageSize = 100.0;
@@ -125,31 +126,11 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
   void _checkValidator(_UpdateConfig config) {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-    _showDialog(config);
-  }
-
-  void _showDialog(_UpdateConfig config) {
-    showDialog(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: Text(
-          'Cập nhật ${config.title}?',
-          style: fontStyleBaloo(_fontSize),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _handleUpdate(config);
-            },
-            child: Text('Đồng ý', style: fontStyleBaloo(_fontSize)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Hủy', style: fontStyleBaloo(_fontSize)),
-          ),
-        ],
-      ),
+    showConfirmDialog(
+      title: 'Cập nhật ${config.title}?',
+      titleStyle: fontStyleBaloo(_fontSize),
+      actionStyle: fontStyleBaloo(_fontSize),
+      onConfirm: () => _handleUpdate(config),
     );
   }
 
@@ -297,7 +278,6 @@ class _UpdateInfoUserState extends State<UpdateInfoUser>
                 ),
               ),
               SizedBox(height: spacing),
-
               if (config.type != 2) ...[
                 // ✅ Case không phải password — chỉ 1 field
                 _valueField(

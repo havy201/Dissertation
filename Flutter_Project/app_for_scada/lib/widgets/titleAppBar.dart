@@ -5,10 +5,11 @@ class TitleAppBar extends StatelessWidget
     with fontStyleMixin
     implements PreferredSizeWidget {
   final String title;
+  final bool isReload;
   final double sizeImage = 30;
   final double buttonExtent = 56;
 
-  const TitleAppBar({super.key, required this.title});
+  const TitleAppBar({super.key, required this.title, this.isReload = false});
 
   @override
   Size get preferredSize => const Size.fromHeight(40);
@@ -30,7 +31,7 @@ class TitleAppBar extends StatelessWidget
         SizedBox(
           width: buttonExtent,
           child: IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context, isReload),
             padding: EdgeInsets.zero,
             constraints: BoxConstraints.tightFor(
               width: buttonExtent,

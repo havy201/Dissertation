@@ -52,6 +52,8 @@ class Global {
   static String baseUrl =
       'https://batchsystem-webapi-hzethfbcbwfya7bh.japaneast-01.azurewebsites.net';
   static String loginEndpoint = 'api/Login';
-  static String recipeEndpoint = 'Recipe';
+  static String productEndpoint = 'api/Product';
+  static String recipeEndpoint = 'api/Recipe';
+  static String ingredientEndpoint = 'api/Material';
   static String accountEndpoint = 'Account';
 }

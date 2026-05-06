@@ -94,6 +94,7 @@ mixin itemDecorationMixin {
     return SizedBox(
       width: 276,
       height: 46,
+
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(

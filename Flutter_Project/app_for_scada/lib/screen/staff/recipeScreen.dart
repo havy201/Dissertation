@@ -1,8 +1,8 @@
 import 'package:app_for_scada/global.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
-import '../../model/Recipe.dart';
-import '../../api/RecipeAPIServer.dart';
+import '../../model/Production/Product.dart';
+import '../../api/ProductAPIServer.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
 
 final double itemSpacing = Global.spacing;
@@ -18,21 +18,17 @@ class RecipeScreen extends StatefulWidget {
 
 class _RecipeScreenState extends State<RecipeScreen>
     with fontStyleMixin, itemDecorationMixin {
-  static Future<List<Recipe>>? _cachedRecipesFuture;
-  late Future<List<Recipe>> _recipesFuture;
+  late Future<List<Product>> _productsFuture;
 
   @override
   void initState() {
     super.initState();
-    _recipesFuture = _cachedRecipesFuture ??= RecipeAPIServer.instance
-        .getAllRecipes();
+    _refreshProducts();
   }
 
-  Future<void> _refreshRecipes() async {
-    final future = RecipeAPIServer.instance.getAllRecipes();
+  Future<void> _refreshProducts() async {
     setState(() {
-      _recipesFuture = future;
-      _cachedRecipesFuture = future;
+      _productsFuture = ProductAPIServer.instance.getAllProducts();
     });
   }
 
@@ -46,18 +42,21 @@ class _RecipeScreenState extends State<RecipeScreen>
         child: RefreshIndicator(
           color: Color(0xFF032B91),
           strokeWidth: 3,
-          onRefresh: _refreshRecipes,
-          child: FutureBuilder<List<Recipe>>(
-            future: _recipesFuture,
+          onRefresh: _refreshProducts,
+          child: FutureBuilder<List<Product>>(
+            future: _productsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Global.loadingIndicator();
               } else if (snapshot.hasError ||
                   !snapshot.hasData ||
                   snapshot.data!.isEmpty) {
+                print('Lỗi: ${snapshot.error}'); // Debug log
+                print('Dữ liệu: ${snapshot.data}'); // Debug log
+
                 String message = snapshot.hasError
-                    ? 'Lỗi khi tải công thức'
-                    : 'Không có công thức nào';
+                    ? 'Lỗi khi tải sản phẩm'
+                    : 'Không có sản phẩm nào';
                 return Global.errorIndicator(message, context);
               } else {
                 return ListView(
@@ -77,20 +76,23 @@ class _RecipeScreenState extends State<RecipeScreen>
           ? Padding(
               padding: EdgeInsets.only(bottom: Global.spacing),
               child: floatingBtn(() {
-                Navigator.pushNamed(
-                  context,
-                  '/addRecipe',
-                ).then((_) => _refreshRecipes());
+                Navigator.pushNamed(context, '/recipeAdd').then((result) {
+                  if (result == true) _refreshProducts();
+                });
               }),
             )
           : null,
     );
   }
 
-  GestureDetector recipeCard(BuildContext context, Recipe recipe) {
+  GestureDetector recipeCard(BuildContext context, Product product) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/recipeDetail', arguments: recipe);
+        Navigator.pushNamed(context, '/recipeDetail', arguments: product).then((
+          result,
+        ) {
+          if (result == true) _refreshProducts();
+        });
       },
       child: Card(
         color: Color(0xffC2FCFF),
@@ -99,7 +101,10 @@ class _RecipeScreenState extends State<RecipeScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: EdgeInsets.all(padding),
-          child: Text(recipe.name, style: fontStyleBaloo(fontSize)),
+          child: Text(
+            product.productName ?? '',
+            style: fontStyleBaloo(fontSize),
+          ),
         ),
       ),
     );

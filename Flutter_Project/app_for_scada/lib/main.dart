@@ -10,7 +10,8 @@ import 'screen/helpScreen.dart';
 import 'screen/staff/homeScreen.dart';
 import 'screen/staff/recipeScreen.dart';
 import 'screen/staff/recipeDetail.dart';
-import 'screen/staff/recipeModify.dart';
+import 'screen/staff/recipeAdd.dart';
+import 'screen/staff/recipeChange.dart';
 import 'screen/staff/trendScreen.dart';
 import 'screen/staff/reportScreen.dart';
 import 'screen/staff/reportDetail.dart';
@@ -49,7 +50,8 @@ class MyApp extends StatelessWidget {
         '/homeScreen': (context) => HomeScreen(),
         '/recipeScreen': (context) => RecipeScreen(),
         '/recipeDetail': (context) => RecipeDetail(),
-        '/recipeModify': (context) => RecipeModify(),
+        '/recipeAdd': (context) => RecipeAdd(),
+        '/recipeChange': (context) => RecipeChange(),
         '/trendScreen': (context) => TrendScreen(),
         '/alarmScreen': (context) => AlarmScreen(),
         '/reportScreen': (context) => ReportScreen(),
@@ -59,6 +61,7 @@ class MyApp extends StatelessWidget {
         '/checkScreen': (context) => CheckScreen(),
       },
       home: Splash(),
+      //home: RecipeAdd(),
       // Scaffold(
       //   appBar: AppBar(title: Text('WebSocket Demo')),
       //   body: WebSocketDemo(),

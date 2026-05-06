@@ -1,64 +1,156 @@
-import 'package:app_for_scada/model/Recipe.dart';
+import 'package:app_for_scada/model/Production/MaterialItem.dart';
+import 'package:app_for_scada/model/Production/Product.dart';
+import 'package:app_for_scada/model/Production/Recipe.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/titleAppBar.dart';
 import 'package:app_for_scada/global.dart';
 import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:get/get.dart';
 
 final double space = Global.spacing;
 final double fontTitleSize = 16;
-final double fontSize = 12;
+final double fontSize = 16;
 
-class RecipeDetail extends StatelessWidget
-    with fontStyleMixin, itemDecorationMixin {
+class RecipeDetail extends StatefulWidget {
   const RecipeDetail({super.key});
 
   @override
+  State<RecipeDetail> createState() => _RecipeDetailState();
+}
+
+class _RecipeDetailState extends State<RecipeDetail>
+    with fontStyleMixin, itemDecorationMixin {
+  Product? _product;
+  List<MaterialItem> _materials = [];
+  bool isReload = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_product == null) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Product) {
+        _product = args;
+        _materials = _product?.recipe?.recipeMaterials ?? [];
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Recipe recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
+    final product =
+        _product ?? ModalRoute.of(context)!.settings.arguments as Product;
+    final recipe = product.recipe;
+    
+
     return Scaffold(
-      appBar: const TitleAppBar(title: 'Công thức'),
+      appBar: TitleAppBar(title: 'Công thức', isReload: isReload),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: screenPadding(),
-          child: Column(
-            children: [
-              Table(
-                columnWidths: {0: FlexColumnWidth(1.5), 1: FlexColumnWidth(2)},
-                border: TableBorder.all(
-                  color: Colors.grey,
-                  width: 1,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: [
-                  TableRow(
-                    decoration: BoxDecoration(color: Color(0xFFF0F0F0)),
+      body: Padding(
+        padding: EdgeInsets.all(space),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SizedBox(
+                width: double.infinity,
+                child: SingleChildScrollView(
+                  child: Table(
+                    columnWidths: const {
+                      0: FlexColumnWidth(1.5),
+                      1: FlexColumnWidth(2),
+                    },
+                    border: TableBorder.all(
+                      color: Colors.grey,
+                      width: 1,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: [
-                      tableCell(
-                        'Tên công thức',
-                        style: fontStyleBaloo(fontTitleSize),
+                      TableRow(
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF0F0F0),
+                        ),
+                        children: [
+                          tableCell(
+                            'Tên công thức',
+                            style: fontStyleBaloo(fontTitleSize),
+                          ),
+                          tableCell(
+                            product.productName ?? '',
+                            style: fontStyleBaloo(fontTitleSize),
+                          ),
+                        ],
                       ),
-                      tableCell(
-                        recipe.name,
-                        style: fontStyleBaloo(fontTitleSize),
-                      ),
+                      if (recipe == null)
+                        TableRow(
+                          children: [
+                            tableCell(
+                              'Công thức',
+                              style: fontStyleInter(fontSize),
+                            ),
+                            tableCell(
+                              'Chưa có dữ liệu công thức',
+                              style: fontStyleInter(fontSize),
+                            ),
+                          ],
+                        )
+                      else
+                        for (var i = 0; i < _materials.length; i++) ...[
+                          _row(
+                            'Nguyên liệu ${i + 1}',
+                            _materials[i].materialName ?? '',
+                          ),
+                          _row(
+                            'Tỷ lệ',
+                            _materials[i].targetKg?.toStringAsFixed(3) ?? '',
+                          ),
+                        ],
                     ],
                   ),
-                  _row('Nguyên liệu 1', recipe.ingredient1),
-                  _row('Tỷ lệ', recipe.ratio1.toString()),
-                  _row('Nguyên liệu 2', recipe.ingredient2),
-                  _row('Tỷ lệ', recipe.ratio2.toString()),
-                  _row('Nguyên liệu 3', recipe.ingredient3),
-                  _row('Tỷ lệ', recipe.ratio3.toString()),
-                  _row('Phụ gia', recipe.spice),
-                  _row('Tỷ lệ', recipe.ratioSpice.toString()),
-                  _row('Nước', recipe.water),
-                  _row('Tỷ lệ', recipe.ratioWater.toString()),
-                ],
+                ),
               ),
-            ],
-          ),
+            ),
+            if (Global.currentUser?.role == 2)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: filledBtn(
+                  () async {
+                    final value = await Get.toNamed(
+                      '/recipeChange',
+                      arguments: product,
+                    );
+
+                    if (value != null && value is Recipe) {
+                      if (value.recipeMaterials != null) {
+                        List<MaterialItem> updatedMaterials = [];
+                        for (
+                          int i = 0;
+                          i < value.recipeMaterials!.length;
+                          i++
+                        ) {
+                          MaterialItem item = MaterialItem(
+                            materialId: value.recipeMaterials![i].materialId,
+                            materialName:
+                                _materials[i].materialName,
+                            targetKg: value.recipeMaterials![i].targetKg,
+                            toleranceMaxKg: value.recipeMaterials![i].toleranceMaxKg,
+                            toleranceMinKg: value.recipeMaterials![i].toleranceMinKg,
+                          );
+                          updatedMaterials.add(item);
+                        }
+                        setState(() {
+                          _materials = updatedMaterials;
+                          isReload = true;
+                        });
+                      }
+                    }
+                  },
+                  'Cập nhật',
+                  color: const Color(0xff00F3FF),
+                ),
+              ),
+          ],
         ),
       ),
     );
