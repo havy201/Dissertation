@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 
 class TopAppBar extends StatelessWidget
-    with fontStyleMixin
+    with mixinDecoration
     implements PreferredSizeWidget {
   final String title;
   final double sizeImage = 30;

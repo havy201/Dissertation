@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import '../../model/Alarm.dart';
 import '../../api/AlarmAPIServer.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 
 final double padding = Global.spacing;
 final double fontSize = 12;
@@ -16,8 +16,7 @@ class AlarmScreen extends StatefulWidget {
   State<AlarmScreen> createState() => _AlarmScreenState();
 }
 
-class _AlarmScreenState extends State<AlarmScreen>
-    with fontStyleMixin, itemDecorationMixin {
+class _AlarmScreenState extends State<AlarmScreen> with mixinDecoration {
   late Future<List<Alarm>> _alarmsFuture;
   @override
   void initState() {

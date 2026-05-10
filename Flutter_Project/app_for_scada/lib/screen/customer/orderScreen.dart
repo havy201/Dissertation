@@ -1,42 +1,30 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:app_for_scada/api/ProductAPIServer.dart';
+import 'package:app_for_scada/api/OrderAPIServer.dart';
+import 'package:app_for_scada/model/Order/ProductionOrder.dart';
+import 'package:app_for_scada/model/Order/ProductionOrderDetail.dart';
+import 'package:app_for_scada/model/Production/ProductItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/topAppBar.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 import '../../global.dart';
-import 'package:app_for_scada/mixin/mixinFunctions.dart';
-import 'package:app_for_scada/mixin/mixinWidgetWithFunction.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
-// ✅ Model sản phẩm — import từ file models/product.dart sau này
-class Product {
-  final int id;
-  final String name;
-  const Product({required this.id, required this.name});
-}
-
-// ✅ Danh sách sản phẩm tách ra ngoài — sau này thay bằng API
-const List<Product> kProductList = [
-  Product(id: 0, name: 'Sản phẩm 1'),
-  Product(id: 1, name: 'Sản phẩm 2'),
-  Product(id: 2, name: 'Sản phẩm 3'),
-];
 
 // ✅ Model cho mỗi dòng đặt hàng
 class OrderItem {
-  final TextEditingController quantityController;
-  int? selectedProductId;
+  final TextEditingController batchQuantityController;
+  String? selectedProductId;
   int quantity;
 
   OrderItem()
-    : quantityController = TextEditingController(text: '1'),
+    : batchQuantityController = TextEditingController(text: '1'),
       quantity = 1,
       selectedProductId = null;
 
-  void dispose() => quantityController.dispose();
+  void dispose() => batchQuantityController.dispose();
 }
 
-class OrderScreen extends StatefulWidget with mixinNotification {
+class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
 
   @override
@@ -45,10 +33,9 @@ class OrderScreen extends StatefulWidget with mixinNotification {
 
 class _OrderScreenState extends State<OrderScreen>
     with
-        itemDecorationMixin,
-        fontStyleMixin,
-        InputFieldDecorationMixin,
-        particularFunctionMixin,
+        mixinDecoration,
+        mixinFuntions,
+        mixinWidgetWithFunction,
         AutomaticKeepAliveClientMixin {
   static const double _fontSize = 20;
   static const double _slidableExtentRatio = 0.22;
@@ -56,10 +43,73 @@ class _OrderScreenState extends State<OrderScreen>
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   final List<OrderItem> _orderItems = [OrderItem()];
+  List<ProductItem> _productItems = [];
 
-  // ✅ Bắt buộc khi dùng AutomaticKeepAliveClientMixin
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllChoices();
+  }
+
+  Future<void> _getAllChoices() async {
+    try {
+      final apiProductItems = await ProductAPIServer.instance
+          .getAllProductItems();
+      if (!mounted) return; // Debug log
+      setState(() {
+        _productItems = apiProductItems
+            .where((e) {
+              final productId = e.productId?.trim();
+              final productName = e.productName?.trim();
+              return productId != null &&
+                  productId.isNotEmpty &&
+                  productId != '0' &&
+                  productName != null &&
+                  productName.isNotEmpty;
+            })
+            .map(
+              (e) => ProductItem(
+                productId: e.productId!.trim(),
+                productName: e.productName!.trim(),
+              ),
+            )
+            .toList();
+        _syncSelectedProductsWithChoices();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _productItems = []);
+    }
+  }
+
+  void _syncSelectedProductsWithChoices() {
+    final productIds = _productItems
+        .map((product) => product.productId)
+        .whereType<String>()
+        .toSet();
+
+    for (final item in _orderItems) {
+      if (!productIds.contains(item.selectedProductId)) {
+        item.selectedProductId = null;
+      }
+    }
+  }
+
+  List<ProductItem> _availableProducts(int index) {
+    final selectedOthers = _orderItems
+        .asMap()
+        .entries
+        .where((e) => e.key != index && e.value.selectedProductId != null)
+        .map((e) => e.value.selectedProductId!)
+        .toSet();
+
+    return _productItems
+        .where((product) => !selectedOthers.contains(product.productId))
+        .toList();
+  }
 
   @override
   void dispose() {
@@ -70,19 +120,22 @@ class _OrderScreenState extends State<OrderScreen>
   }
 
   void _addOrderItem() {
+    if (_orderItems.length >= _productItems.length) return;
     setState(() => _orderItems.add(OrderItem()));
   }
 
   void _removeOrderItem(int index) {
-    if (_orderItems.length <= 1) return;
-    _orderItems[index].dispose();
+    if (index < 0 || index >= _orderItems.length) return;
+
+    final removedItem = _orderItems[index];
     setState(() => _orderItems.removeAt(index));
+    removedItem.dispose();
   }
 
   void _resetOrderForm() {
-    for (final item in _orderItems) {
-      item.dispose();
-    }
+    // for (final item in _orderItems) {
+    //   item.dispose();
+    // }
 
     setState(() {
       _orderItems
@@ -93,10 +146,19 @@ class _OrderScreenState extends State<OrderScreen>
     _formKey.currentState?.reset();
   }
 
-  Future<void> _handleOrder() async {
+  void _checkValidator() {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
 
+    showConfirmDialog(
+      title: 'Đặt hàng?',
+      titleStyle: fontStyleBaloo(_fontSize),
+      actionStyle: fontStyleBaloo(_fontSize),
+      onConfirm: _handleOrder,
+    );
+  }
+
+  Future<void> _handleOrder() async {
     setState(() => _isLoading = true);
 
     final overlay = Overlay.of(context, rootOverlay: true);
@@ -108,46 +170,60 @@ class _OrderScreenState extends State<OrderScreen>
 
     try {
       // ── Snackbar loading ────────────────────────
-      final controller = widget.notifyUser(
+      final controller = notifyUser(
         context,
         'Đang đặt hàng...',
         fontStyleBaloo(_fontSize, color: Colors.white),
-        Colors.grey,
+        Global.primaryBlue,
       );
       await controller.closed;
       if (!mounted) return;
+      // Debug log
+      final details = <ProductionOrderDetail>[];
+      for (int i = 0; i < _orderItems.length; i++) {
+        final item = ProductionOrderDetail(
+          productId: _orderItems[i].selectedProductId!,
+          batchQuantity: _orderItems[i].quantity,
+          sequenceNo: i + 1,
+        );
+        details.add(item);
+      }
 
-      // final payload = _orderItems
-      //     .map((item) => {
-      //           'product_id': item.selectedProductId,
-      //           'quantity': item.quantity,
-      //         })
-      //     .toList();
-
-      // // TODO: đổi sang API thật, ví dụ:
-      // // final isSuccess = await ApiService.placeOrder(payload);
-      // final isSuccess = payload.isNotEmpty;
-
-      // if (!isSuccess) {
-      //   throw Exception('Đặt hàng thất bại từ API');
-      // }
-
-      _resetOrderForm();
-
-      widget.notifyUser(
-        context,
-        'Đặt hàng thành công',
-        fontStyleBaloo(_fontSize, color: Colors.white),
-        Colors.green,
+      final productionOrder = ProductionOrder(
+        priority: 0,
+        plannedStartTime: DateTime.now().toUtc().toIso8601String(),
+        plannedEndTime: DateTime.now()
+            .add(Duration(days: _orderItems.length))
+            .toUtc()
+            .toIso8601String(),
+        userName: Global.currentUser?.userName,
+        details: details,
       );
+
+      bool isCreated = await OrderAPIServer.instance.createProductionOrder(
+        productionOrder,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      _resetOrderForm();
+      if (isCreated) {
+        final success = notifyUser(
+          context,
+          'Cập nhật thành công!',
+          fontStyleBaloo(_fontSize, color: Colors.white),
+          Colors.green[900]!,
+        );
+        await success.closed;
+        if (!mounted) return;
+      }
 
       // Navigator.pushReplacementNamed(context, '/trackingScreen');
     } catch (e) {
       if (!mounted) return;
-      widget.notifyUser(
+      notifyUser(
         context,
         'Đặt hàng thất bại',
-        fontStyleBaloo(_fontSize),
+        fontStyleBaloo(_fontSize, color: Colors.white),
         Colors.red,
       );
     } finally {
@@ -160,15 +236,26 @@ class _OrderScreenState extends State<OrderScreen>
     final primaryBlue = Global.primaryBlue;
     final spacing = Global.spacing;
     final item = _orderItems[index];
+    final availableProducts = _availableProducts(index);
+    final selectedProductId =
+        availableProducts.any(
+          (product) => product.productId == item.selectedProductId,
+        )
+        ? item.selectedProductId
+        : null;
+
     return Column(
-      key: ValueKey(index),
+      key: ObjectKey(item),
       children: [
         // ── Dropdown + Slidable xóa ──────────────
         Slidable(
-          key: ValueKey('slidable_$index'),
+          key: ObjectKey(item),
           endActionPane: ActionPane(
             extentRatio: _slidableExtentRatio,
             motion: const StretchMotion(),
+            dismissible: DismissiblePane(
+              onDismissed: () => _removeOrderItem(index),
+            ),
             children: [
               CustomSlidableAction(
                 onPressed: (_) => _removeOrderItem(index),
@@ -180,7 +267,7 @@ class _OrderScreenState extends State<OrderScreen>
           // ✅ Không bọc Expanded ở đây — Slidable không phải Row
           child: Theme(
             data: Theme.of(context).copyWith(hintColor: primaryBlue),
-            child: DropdownButtonFormField<int>(
+            child: DropdownButtonFormField<String>(
               icon: Icon(Icons.arrow_drop_down, color: primaryBlue),
               iconSize: 35,
               isExpanded: true,
@@ -188,26 +275,32 @@ class _OrderScreenState extends State<OrderScreen>
               borderRadius: BorderRadius.circular(10),
               dropdownColor: Colors.white,
               elevation: 4,
-              value: item.selectedProductId, // ✅ Dùng value thay initialValue
+              initialValue: selectedProductId,
               decoration: InputDecoration(
                 prefixIcon: prefixIconPadding('lib/icons/recipe_light.png'),
                 contentPadding: contentPadding(),
-                hintText: 'Chọn sản phẩm',
+                hintText: _productItems.isEmpty
+                    ? 'Không có sản phẩm'
+                    : 'Chọn sản phẩm',
                 hintStyle: fontStyleInter(_fontSize, color: primaryBlue),
                 border: outlineInputBorder(),
                 enabledBorder: outlineInputBorder(),
                 focusedBorder: outlineInputBorder(),
               ),
-              // ✅ Import từ kProductList
-              items: kProductList
+              items: availableProducts
                   .map(
-                    (p) => DropdownMenuItem(value: p.id, child: Text(p.name)),
+                    (product) => DropdownMenuItem(
+                      value: product.productId,
+                      child: Text(product.productName ?? ''),
+                    ),
                   )
                   .toList(),
               onChanged: _isLoading
                   ? null
                   : (value) => setState(() => item.selectedProductId = value),
-              validator: mesDropdownValidation<int>('Vui lòng chọn sản phẩm'),
+              validator: mesDropdownValidation<String>(
+                'Vui lòng chọn sản phẩm',
+              ),
             ),
           ),
         ),
@@ -228,7 +321,7 @@ class _OrderScreenState extends State<OrderScreen>
                       if (item.quantity > 1) {
                         setState(() {
                           item.quantity--;
-                          item.quantityController.text = item.quantity
+                          item.batchQuantityController.text = item.quantity
                               .toString();
                         });
                       }
@@ -241,7 +334,7 @@ class _OrderScreenState extends State<OrderScreen>
                 style: fontStyleInter(15, color: primaryBlue),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                controller: item.quantityController,
+                controller: item.batchQuantityController,
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   border: outlineInputBorder(),
@@ -253,7 +346,7 @@ class _OrderScreenState extends State<OrderScreen>
                     item.quantity = int.tryParse(value) ?? 1;
                     if (item.quantity < 1) {
                       item.quantity = 1;
-                      item.quantityController.text = '1';
+                      item.batchQuantityController.text = '1';
                     }
                   });
                 },
@@ -266,7 +359,8 @@ class _OrderScreenState extends State<OrderScreen>
                   : () {
                       setState(() {
                         item.quantity++;
-                        item.quantityController.text = item.quantity.toString();
+                        item.batchQuantityController.text = item.quantity
+                            .toString();
                       });
                     },
               icon: Icon(Icons.add, color: primaryBlue, size: 20),
@@ -282,6 +376,8 @@ class _OrderScreenState extends State<OrderScreen>
   Widget build(BuildContext context) {
     super.build(context); // ✅ Bắt buộc khi dùng AutomaticKeepAliveClientMixin
     final spacing = Global.spacing;
+    final canAddOrderItem =
+        !_isLoading && _orderItems.length < _productItems.length;
 
     return Scaffold(
       appBar: TopAppBar(title: 'Đặt hàng'),
@@ -299,14 +395,14 @@ class _OrderScreenState extends State<OrderScreen>
                       children: [
                         for (var i = 0; i < _orderItems.length; i++)
                           _buildOrderRow(i),
-                        iconBtnCustom(_isLoading ? null : _addOrderItem),
+                        iconBtnCustom(canAddOrderItem ? _addOrderItem : null),
                       ],
                     ),
                   ),
                 ),
               ),
               SizedBox(height: spacing),
-              filledBtn(_isLoading ? null : _handleOrder, 'Đặt hàng'),
+              filledBtn(_isLoading ? null : _checkValidator, 'Đặt hàng'),
             ],
           ),
         ),

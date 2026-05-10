@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 import '../../widgets/topAppBar.dart';
 import '../../global.dart';
 
-class HomeScreen extends StatelessWidget
-    with fontStyleMixin, itemDecorationMixin {
+class HomeScreen extends StatelessWidget with mixinDecoration {
   const HomeScreen({super.key});
 
   static const double _fontSize = 20;

@@ -55,5 +55,5 @@ class Global {
   static String productEndpoint = 'api/Product';
   static String recipeEndpoint = 'api/Recipe';
   static String ingredientEndpoint = 'api/Material';
-  static String accountEndpoint = 'Account';
+  static String productionOrderEndpoint = 'api/ProductionOrder';
 }

@@ -1,3 +1,4 @@
+import 'package:app_for_scada/model/Production/ProductItem.dart';
 import 'package:app_for_scada/model/Production/IngredientItem.dart';
 import 'package:app_for_scada/model/Production/Recipe.dart';
 import 'package:app_for_scada/model/Production/Product.dart';
@@ -13,8 +14,25 @@ class ProductAPIServer {
   final String endpointRecipe = Global.recipeEndpoint;
 
   ProductAPIServer._init();
+  Future<List<ProductItem>> getAllProductItems() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/$endpointProduct/GetAllProduct'),
+    );
 
-  Future<List<Product>> getAllProducts() async {
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      final List<dynamic> data = decoded is List
+          ? decoded
+          : (decoded as Map<String, dynamic>)['value'] as List<dynamic>;
+      return data
+          .map((item) => ProductItem.fromMap(Map<String, dynamic>.from(item)))
+          .toList();
+    } else {
+      throw Exception('Failed to load product items: ${response.statusCode}');
+    }
+  }
+
+  Future<List<Product>> getAllProductsInfo() async {
     final response = await http.get(
       Uri.parse('$baseUrl/$endpointProduct/GetAll'),
     );
@@ -80,20 +98,15 @@ class ProductAPIServer {
   }
 
   Future<bool> updateRecipe(Recipe recipe) async {
-    final body = recipe.toPatchJson();
     final response = await http.patch(
       Uri.parse('$baseUrl/$endpointRecipe'),
       headers: {'Content-Type': 'application/json'},
-      body: body,
+      body: recipe.toJson(),
     );
-    print('Recipe gui di: $body'); // Debug log
+
     if (response.statusCode == 200 || response.statusCode == 204) {
-      print('Hoan thanh thay doi don hang');
       return true;
     } else {
-      print(
-        'Loi khi thay doi don hang: ${response.statusCode} - ${response.body}',
-      );
       throw Exception(
         'Failed to update recipe: ${response.statusCode} - ${response.body}',
       );

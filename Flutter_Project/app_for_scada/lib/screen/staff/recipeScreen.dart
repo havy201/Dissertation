@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/topAppBar.dart';
 import '../../model/Production/Product.dart';
 import '../../api/ProductAPIServer.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 
 final double itemSpacing = Global.spacing;
 final double padding = Global.padding;
@@ -16,8 +16,7 @@ class RecipeScreen extends StatefulWidget {
   State<RecipeScreen> createState() => _RecipeScreenState();
 }
 
-class _RecipeScreenState extends State<RecipeScreen>
-    with fontStyleMixin, itemDecorationMixin {
+class _RecipeScreenState extends State<RecipeScreen> with mixinDecoration {
   late Future<List<Product>> _productsFuture;
 
   @override
@@ -28,7 +27,7 @@ class _RecipeScreenState extends State<RecipeScreen>
 
   Future<void> _refreshProducts() async {
     setState(() {
-      _productsFuture = ProductAPIServer.instance.getAllProducts();
+      _productsFuture = ProductAPIServer.instance.getAllProductsInfo();
     });
   }
 
@@ -51,9 +50,6 @@ class _RecipeScreenState extends State<RecipeScreen>
               } else if (snapshot.hasError ||
                   !snapshot.hasData ||
                   snapshot.data!.isEmpty) {
-                print('Lỗi: ${snapshot.error}'); // Debug log
-                print('Dữ liệu: ${snapshot.data}'); // Debug log
-
                 String message = snapshot.hasError
                     ? 'Lỗi khi tải sản phẩm'
                     : 'Không có sản phẩm nào';

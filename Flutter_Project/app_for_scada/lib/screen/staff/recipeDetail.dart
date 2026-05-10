@@ -4,7 +4,7 @@ import 'package:app_for_scada/model/Production/Recipe.dart';
 import 'package:flutter/material.dart';
 import 'package:app_for_scada/widgets/titleAppBar.dart';
 import 'package:app_for_scada/global.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 import 'package:get/get.dart';
 
 final double space = Global.spacing;
@@ -18,8 +18,7 @@ class RecipeDetail extends StatefulWidget {
   State<RecipeDetail> createState() => _RecipeDetailState();
 }
 
-class _RecipeDetailState extends State<RecipeDetail>
-    with fontStyleMixin, itemDecorationMixin {
+class _RecipeDetailState extends State<RecipeDetail> with mixinDecoration {
   Product? _product;
   List<MaterialItem> _materials = [];
   bool isReload = false;
@@ -41,7 +40,6 @@ class _RecipeDetailState extends State<RecipeDetail>
     final product =
         _product ?? ModalRoute.of(context)!.settings.arguments as Product;
     final recipe = product.recipe;
-    
 
     return Scaffold(
       appBar: TitleAppBar(title: 'Công thức', isReload: isReload),
@@ -131,11 +129,12 @@ class _RecipeDetailState extends State<RecipeDetail>
                         ) {
                           MaterialItem item = MaterialItem(
                             materialId: value.recipeMaterials![i].materialId,
-                            materialName:
-                                _materials[i].materialName,
+                            materialName: _materials[i].materialName,
                             targetKg: value.recipeMaterials![i].targetKg,
-                            toleranceMaxKg: value.recipeMaterials![i].toleranceMaxKg,
-                            toleranceMinKg: value.recipeMaterials![i].toleranceMinKg,
+                            toleranceMaxKg:
+                                value.recipeMaterials![i].toleranceMaxKg,
+                            toleranceMinKg:
+                                value.recipeMaterials![i].toleranceMinKg,
                           );
                           updatedMaterials.add(item);
                         }

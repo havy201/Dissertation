@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:app_for_scada/mixin/mixinFunctions.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 import 'package:flutter/services.dart';
 import 'package:app_for_scada/widgets/titleAppBar.dart';
 import 'package:app_for_scada/global.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
-import 'package:app_for_scada/mixin/mixinWidgetWithFunction.dart';
 import 'package:app_for_scada/api/ProductAPIServer.dart';
 import 'package:app_for_scada/model/Production/IngredientItem.dart';
 import 'package:app_for_scada/model/Production/MaterialItem.dart';
 import 'package:app_for_scada/model/Production/Recipe.dart';
 import 'package:app_for_scada/model/Production/Product.dart';
 
-class RecipeAdd extends StatefulWidget with mixinNotification {
+class RecipeAdd extends StatefulWidget {
   const RecipeAdd({super.key});
 
   @override
@@ -19,12 +17,7 @@ class RecipeAdd extends StatefulWidget with mixinNotification {
 }
 
 class _RecipeAddState extends State<RecipeAdd>
-    with
-        fontStyleMixin,
-        InputFieldDecorationMixin,
-        itemDecorationMixin,
-        mixinWidgetWithFunction,
-        particularFunctionMixin {
+    with mixinDecoration, mixinFuntions, mixinWidgetWithFunction {
   static const double _fontSize = 20;
   static const Color _buttonColor = Color(0xff00F3FF);
 
@@ -109,7 +102,7 @@ class _RecipeAddState extends State<RecipeAdd>
     overlay.insert(blocker);
 
     try {
-      final loading = widget.notifyUser(
+      final loading = notifyUser(
         context,
         'Đang cập nhật...',
         fontStyleBaloo(_fontSize, color: Colors.white),
@@ -143,16 +136,16 @@ class _RecipeAddState extends State<RecipeAdd>
         recipeId: idRecipe,
         weightPerPieceKg: 50,
       );
-      print('Da tao product voi recipeId: ${product.recipeId}');
+
       bool isCreated = await ProductAPIServer.instance.createProduction(
         product,
       );
-      print('Da tao production');
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
       if (isCreated) {
-        final success = widget.notifyUser(
+        final success = notifyUser(
           context,
           'Cập nhật thành công!',
           fontStyleBaloo(_fontSize, color: Colors.white),
@@ -160,12 +153,12 @@ class _RecipeAddState extends State<RecipeAdd>
         );
         await success.closed;
         if (!mounted) return;
-        Navigator.pop(context,true);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      final error = widget.notifyUser(
+      final error = notifyUser(
         context,
         'Cập nhật thất bại!',
         fontStyleBaloo(_fontSize, color: Colors.white),

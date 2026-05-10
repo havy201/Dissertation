@@ -2,7 +2,7 @@ import 'package:app_for_scada/model/Trend.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/topAppBar.dart';
-import 'package:app_for_scada/mixin/mixinDecorations.dart';
+import 'package:app_for_scada/mixin/mixins.dart';
 
 class TrendScreen extends StatefulWidget {
   const TrendScreen({super.key});
@@ -11,8 +11,7 @@ class TrendScreen extends StatefulWidget {
   State<TrendScreen> createState() => _TrendScreenState();
 }
 
-class _TrendScreenState extends State<TrendScreen>
-    with itemDecorationMixin, fontStyleMixin {
+class _TrendScreenState extends State<TrendScreen> with mixinDecoration {
   List<FlSpot> spots = [FlSpot(10, 11), FlSpot(20, 21), FlSpot(30, 15)];
   @override
   Widget build(BuildContext context) {
