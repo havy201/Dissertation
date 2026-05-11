@@ -4,8 +4,8 @@
     {
       "name": "Admin",
       "password": {
-        "hash": "ly59yGV/MJUju2bNvdXTdbq/yk0FKS8MIv6NmvkyAIFsyz+OJQY1IPxPTxzx8QYFxwxHV1u94EU++K5JTJNdBA==",
-        "salt": "EmHVL3X+Y57YnkpUK3sPr0cMyGfM37n9h2yV3hbIHiQ=",
+        "hash": "41UTuQz+cn10UVLq5DXVerCEGc6UoJNSixUQ+2oLTvn1+0rmUE44vc9v+eEvZi5lph1CHFxuMqEf1F2qvYzsUg==",
+        "salt": "pAV12Oa7WJj0JXuDU0GRistP+yMu6l5NwW91FBFwxvs=",
         "algorithm": "PBKDF2-HMAC-SHA1",
         "encoding": "utf16le",
         "iteration": 10000
@@ -19,8 +19,8 @@
     {
       "name": "Operator",
       "password": {
-        "hash": "6y3+n5iP1be9KoSk7IKQrzz+HPqy3ZN/zWKrcCoP5j4bw8CjrtYpIHjiEXNWjYrfKW0LsICq9mCBlt2D7s7qzA==",
-        "salt": "puoba1kiix9VhG5MJttQL2qOvnsKxBwsfLcVGLVravg=",
+        "hash": "Cq94A5H9atgUq70vBz+AIZQJEKHetI34A46P1dTtVxsGdN/5urIydiZDHhGvy1LmBWAamQbvOWZNn+w8NFb76w==",
+        "salt": "pmeZHpi+JBvpKyW/LqXyhTmoAVb9vVktv6kR73fFUak=",
         "algorithm": "PBKDF2-HMAC-SHA1",
         "encoding": "utf16le",
         "iteration": 10000
